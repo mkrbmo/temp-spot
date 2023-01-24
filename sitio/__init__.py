@@ -26,7 +26,8 @@ def create_app(test_config=None):
     def hello():
         return 'Hello, World!'
 
-    from . import authorize
+    from . import authorize, spotif
     app.register_blueprint(authorize.bp)
+    app.register_blueprint(spotif.bp)
 
     return app

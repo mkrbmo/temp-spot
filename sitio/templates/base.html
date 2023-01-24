@@ -10,16 +10,22 @@
 
 <body>
     <header>
-
-    </header>
-        <div class="nav">
-            <a href="#">spotif</a>
-            <a href="{{ url_for('authorize.authorize') }}">connect</a>
+        <div class="nav flex justify-center">
+            <div class="navbar">
+                <div class="nav-items flex">
+                    <a class='nav-item' href="{{ url_for('spotif.home') }}">spotif</a>
+                    <a class='nav-item' href="{{ url_for('authorize.authorize') }}">connect</a>
+                    <a class='nav-item' href="{{ url_for('spotif.fetch') }}">fetch</a>
+                </div>
+            </div>
         </div>
         
     </header>
 
-    {% block content %} {% endblock %}
-
+<div class="flex justify-center">
+    <div class="main flex">
+        {% block content %} {% endblock %}
+    </div>
+</div>
 </body>
 </html>
