@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <header>
+        <div class="nav flex justify-center">
+            <div class="navbar">
+                <div class="nav-items flex">
+                    <a class='nav-item' href="{{ url_for('spotif.home') }}">spotif</a>
+                    <a class='nav-item' href="{{ url_for('authorize.authorize') }}">connect</a>
+                    <a class='nav-item' href="{{ url_for('spotif.fetch') }}">fetch</a>
+                    <a class='nav-item' href="{{ url_for('spotif.analysis') }}">analyze</a>
+                    <a class='nav-item' href="{{ url_for('spotif.req') }}">req</a>
+                </div>
+            </div>
+        </div>
+        
+    </header>
+
+<div class="flex justify-center">
+    <div class="main flex">
+        {% block content %} {% endblock %}
+    </div>
+</div>
+</body>
+</html>
