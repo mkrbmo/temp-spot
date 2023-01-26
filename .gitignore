@@ -1,2 +1,2 @@
-sitio/config.py
-/sitio/__pycache__/*
+/application/__pycache__
+/instance
