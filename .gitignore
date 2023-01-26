@@ -1,2 +1,2 @@
 sitio/config.py
-__pycache__/*
+/sitio/__pycache__/*

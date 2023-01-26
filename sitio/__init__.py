@@ -1,5 +1,8 @@
 import os
 from flask import Flask
+from transformers import pipeline
+
+pipe = pipeline('sentiment-analysis', model="arpanghoshal/EmoRoBERTa", top_k=None)
 
 def create_app(test_config=None):
     # create and configure the app
@@ -29,5 +32,7 @@ def create_app(test_config=None):
     from . import authorize, spotif
     app.register_blueprint(authorize.bp)
     app.register_blueprint(spotif.bp)
+
+    pipe = pipeline('sentiment-analysis', model="arpanghoshal/EmoRoBERTa", top_k=None)
 
     return app
