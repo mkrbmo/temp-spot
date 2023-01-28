@@ -3,7 +3,7 @@ import requests, json
 
 from flask import current_app as app
 
-bp = Blueprint('spotif', __name__)
+bp = Blueprint('routes', __name__)
 
 @bp.route('/')
 def home():
@@ -49,31 +49,33 @@ def analysis():
 @bp.route('/req', methods=('GET', 'POST'))
 def req():
     if request.method == "POST":
-        parameters = {}
-    
-        for item in request.form:
-            if item != 'response':
-                parameters[item] = request.form[item]
-        
-        getReccomendations(parameters)
-
+        #parameters = formatReccomendationFormData(request.form)
+        #url = generateReccomendationURL(parameters)
+        print(request.form)
     return render_template('req.html')
 
-def getReccomendations(parameters):
-    print(parameters)
-    for param in parameters:
-        match param:
-            case 'low':
-                param['min'] = 0.0
-                param['max'] = 0.5
-            case 'mid':
-                param['min'] = 0.35
-                param['max'] = 0.65
-            case 'high':
-                param['min'] = 0.65
-                param['max'] = 1.0
 
-        print(param)
+def formatReccomendationData(form):
+    parameters = {}
+    del form['response']
+
+    for item in form:
+            if form[item] == 'low':
+                parameters[item] = {'min': 0.0, 'max': 0.35}
+            if form[item] == 'mid':
+                parameters[item] = {'min': 0.35, 'max': 0.65}
+            if form[item] == 'high':
+                parameters[item] = {'min': 0.65, 'max': 1.0}
+
+    return parameters
+
+
+def generateReccomendationURL(parameters):
+    limit = 5
+    url = f"https://api.spotify.com/v1/recommendations?limit={limit}&market=EN&seed_genres={parameters['seed']}&min_energy={parameters['energy']['min']}&max_energy={parameters['energy']['max']}&min_tempo={parameters['tempo']['min']}&max_tempo={parameters['tempo']['max']}&min_valence={parameters['valence']['min']}&max_valence={parameters['valence']['max']}"
+    
+    return url
+
 
 
 

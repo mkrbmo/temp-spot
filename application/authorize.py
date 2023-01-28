@@ -15,9 +15,9 @@ def generateKey(length):
 @bp.route('/authorize/', methods=('GET', 'POST'))
 def authorize():
     if request.method == 'POST':
-        clientId = app.config.SPOTIFY_CLIENT_ID
-        redirectURI = app.config.SPOTIFY_REDIRECT_URI
-        scopes = app.config.SPOTIFY_SCOPES
+        clientId = app.config['SPOTIFY_CLIENT_ID']
+        redirectURI = app.config['SPOTIFY_REDIRECT_URI']
+        scopes = app.config['SPOTIFY_SCOPES']
         stateKey = generateKey(16)
         session['key'] = stateKey
 
@@ -42,7 +42,7 @@ def callback():
         return render_template('authorize/login.html', errorMsg = "spotify error")
     
     code = request.args.get('code')
-    authString = app.config.SPOTIFY_CLIENT_ID+':'+ app.config.SPOTIFY_SECRET
+    authString = app.config['SPOTIFY_CLIENT_ID']+':'+ app.config['SPOTIFY_SECRET']
     b64AuthString = base64.urlsafe_b64encode(authString.encode()).decode()
 
     url = 'https://accounts.spotify.com/api/token'
@@ -53,7 +53,7 @@ def callback():
     }
     body = {
         'code': code, 
-        'redirect_uri': app.config.SPOTIFY_REDIRECT_URI, 
+        'redirect_uri': app.config['SPOTIFY_REDIRECT_URI'], 
         'grant_type': 'authorization_code',
     }
     response = requests.post(url, headers=headers, data=body)

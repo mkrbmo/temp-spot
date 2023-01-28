@@ -6,7 +6,7 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True) 
     app.config.from_pyfile('config.py')
-
+    '''
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
@@ -19,10 +19,9 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-    
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
+    '''
+
+    #NEED TO ADD CONTEXT 
 
     from . import authorize, routes
     app.register_blueprint(authorize.bp)
@@ -31,3 +30,4 @@ def create_app(test_config=None):
     pipe = pipeline('sentiment-analysis', model="arpanghoshal/EmoRoBERTa", top_k=None)
 
     return app
+

@@ -10,10 +10,11 @@ def app():
 
     # other setup can go here
 
-    yield app
+    yield app.test_client()
 
     # clean up / reset resources here
 
+'''
 
 @pytest.fixture()
 def client(app):
@@ -23,3 +24,4 @@ def client(app):
 @pytest.fixture()
 def runner(app):
     return app.test_cli_runner()
+'''
