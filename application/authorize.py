@@ -1,5 +1,5 @@
-import random, string, requests, base64, time
-
+import requests, base64, time
+from functions import generate_key
 from flask import (
     Blueprint, redirect, render_template, request, session, make_response
 )
@@ -7,9 +7,6 @@ from flask import current_app as app
 
 bp = Blueprint('authorize', __name__)
 
-#GENERATOR FUNCTION FOR STATE KEY
-def generateKey(length):
-    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
 #INITIATION VIEW FOR AUTHORIZING SPOTIFY CONNECTION
 @bp.route('/authorize/', methods=('GET', 'POST'))
@@ -18,7 +15,7 @@ def authorize():
         clientId = app.config['SPOTIFY_CLIENT_ID']
         redirectURI = app.config['SPOTIFY_REDIRECT_URI']
         scopes = app.config['SPOTIFY_SCOPES']
-        stateKey = generateKey(16)
+        stateKey = generate_key(16)
         session['key'] = stateKey
 
         url = 'https://accounts.spotify.com/en/authorize?'
@@ -71,13 +68,6 @@ def callback():
     
     return redirect('/fetch')
 
-''' RESPONSE TOKEN EXAMPLE
-{'access_token': 'BQAnWIPnU4L0D7iiVziJjHWbn5WnpAARSSugDWfX8juoPloSqz-u20Pi7-GVGGk0bV6ESx1FYDnsN8R-C6NkDxobzuteCMcLbJU_83Lwb1A6lri1Mkxb09WLJPVD8QELvMWPfVcdOd0-Fvj11XKq3f4fzOE2Ad3g67IakNtTJJs5kmZHqlOHddhjkJ-T9sQavlEM6X-Mtig', 
-'token_type': 'Bearer', 
-'expires_in': 3600, 
-'refresh_token': 'AQC3rmT_h6bJ10XuiNfZWTucmSHDu953g7-LW9sxOGlEoyIrYgryVxSwjKgadWFTQIGS_4T_iOY7ozgEvJ9ftcoyLFxgemOgtHbCU0IAtWJuIwHXwAnGCKMcQ4MkWcp4R-Y', 
-'scope': 'user-read-recently-played'}
-'''
 
 def refreshToken():
     #code = request.args.get('code')

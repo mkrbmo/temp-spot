@@ -27,7 +27,8 @@ def create_app(test_config=None):
     app.register_blueprint(authorize.bp)
     app.register_blueprint(routes.bp)
 
-    pipe = pipeline('sentiment-analysis', model="arpanghoshal/EmoRoBERTa", top_k=None)
+    
 
     return app
 
+pipe = pipeline('sentiment-analysis', model="arpanghoshal/EmoRoBERTa", top_k=None)

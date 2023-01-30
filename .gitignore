@@ -1,2 +1,5 @@
 /application/__pycache__
 /instance
+data_cleaning.py
+spotify.csv
+.DS_store
