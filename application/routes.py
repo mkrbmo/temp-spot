@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, request, session
 import requests, json
+from application import pipe
+from functions import generate_reccomendation_url, format_reccomendation_data, transform_to_audio_features
 
-from flask import current_app as app
-
-bp = Blueprint('spotif', __name__)
+bp = Blueprint('routes', __name__)
 
 @bp.route('/')
 def home():
@@ -18,10 +18,10 @@ def fetch():
         headers = {
             'Authorization': 'Bearer ' + session['access_token']
         }
-        print(base_url+input)
+        
         response = requests.get(base_url+input, headers=headers)
 
-        jsonData = response.json()
+        jsonData = response.text
         jsonData = json.dumps(response.json(), indent=2)
 
         return render_template('fetch.html', response=jsonData)
@@ -33,7 +33,7 @@ def analysis():
     if request.method == 'POST':
         input = request.form['inputSentence']
 
-        labels = app.pipe(input)[0]
+        labels = pipe(input)[0]
         emotions = []
 
         for each in labels:
@@ -46,34 +46,29 @@ def analysis():
 
     return render_template('analysis.html')
 
+
 @bp.route('/req', methods=('GET', 'POST'))
-def req():
+def reccomendation():
     if request.method == "POST":
-        parameters = {}
-    
-        for item in request.form:
-            if item != 'response':
-                parameters[item] = request.form[item]
-        
-        getReccomendations(parameters)
+        parameters = format_reccomendation_data(request.form.to_dict())
+        url = generate_reccomendation_url(parameters)
 
-    return render_template('req.html')
+        headers = {
+            'Authorization': 'Bearer ' + session['access_token'],
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+        print(url)
+        response = requests.get(url, headers=headers)
+        data = response.json()
 
-def getReccomendations(parameters):
-    print(parameters)
-    for param in parameters:
-        match param:
-            case 'low':
-                param['min'] = 0.0
-                param['max'] = 0.5
-            case 'mid':
-                param['min'] = 0.35
-                param['max'] = 0.65
-            case 'high':
-                param['min'] = 0.65
-                param['max'] = 1.0
+        return render_template('reccomendation.html', response=data)
 
-        print(param)
+    return render_template('reccomendation.html')
+
+
+
+
 
 
 
