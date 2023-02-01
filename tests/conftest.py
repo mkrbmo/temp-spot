@@ -1,5 +1,6 @@
 import pytest
 from application import create_app
+from flask import session
 
 @pytest.fixture()
 def app():
@@ -12,18 +13,16 @@ def app():
 
     # other setup can go here
 
-    yield app.test_client()
+    yield app
 
     # clean up / reset resources here
 
 @pytest.fixture()
 def client(app):
-    return app.test_client()
+    with app.test_client() as testing_client:
+        with app.app_context():
+
+            yield testing_client
 
 
-'''
-@pytest.fixture()
-def runner(app):
-    return app.test_cli_runner()
-'''
 

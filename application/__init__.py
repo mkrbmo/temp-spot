@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, session
 from transformers import pipeline
 
 def create_app(test_config=None):

@@ -1,5 +1,5 @@
-import requests, base64, time
-from functions import generate_key
+import requests, base64, time 
+from application.functions import generate_key
 from flask import (
     Blueprint, redirect, render_template, request, session, make_response
 )
@@ -11,6 +11,7 @@ bp = Blueprint('authorize', __name__)
 #INITIATION VIEW FOR AUTHORIZING SPOTIFY CONNECTION
 @bp.route('/authorize/', methods=('GET', 'POST'))
 def authorize():
+    session.clear()
     if request.method == 'POST':
         clientId = app.config['SPOTIFY_CLIENT_ID']
         redirectURI = app.config['SPOTIFY_REDIRECT_URI']
@@ -22,7 +23,7 @@ def authorize():
         parameters = 'response_type=code&client_id=' + clientId + '&redirect_uri=' + redirectURI + '&scope=' + scopes + '&state=' + stateKey
 
         response = make_response(redirect(url + parameters))
-
+        
         return response
 
         
@@ -34,9 +35,9 @@ def authorize():
 def callback():
     state = request.args.get('state')
     if state != session['key'] or state == None :
-        return render_template('authorize/login.html', errorMsg = "state mismatch") #ADD ERROR MESSAGE HANDLING IN TEMPLATE
+        return render_template('login.html', errorMsg = "state mismatch") #ADD ERROR MESSAGE HANDLING IN TEMPLATE
     elif request.args.get('error'):
-        return render_template('authorize/login.html', errorMsg = "spotify error")
+        return render_template('login.html', errorMsg = "spotify error")
     
     code = request.args.get('code')
     authString = app.config['SPOTIFY_CLIENT_ID']+':'+ app.config['SPOTIFY_SECRET']
@@ -53,6 +54,7 @@ def callback():
         'redirect_uri': app.config['SPOTIFY_REDIRECT_URI'], 
         'grant_type': 'authorization_code',
     }
+    
     response = requests.post(url, headers=headers, data=body)
     
     #TOKEN RESPONSE
@@ -64,31 +66,7 @@ def callback():
     session['refresh_token'] = payload['refresh_token']
     session['expiration'] = time.time() + payload['expires_in']
 
-    print(session)
+    print('post token:', session)
     
     return redirect('/fetch')
 
-
-def refreshToken():
-    #code = request.args.get('code')
-    authString = app.config.SPOTIFY_CLIENT_ID+':'+ app.config.SPOTIFY_SECRET
-    b64AuthString = base64.urlsafe_b64encode(authString.encode()).decode()
-
-    url = 'https://accounts.spotify.com/api/token'
-    headers = {
-        'Authorization': "Basic " + b64AuthString, 
-        'Content-Type': 'application/x-www-form-urlencoded'
-    }
-    body = {
-        'refresh_token': session['refresh_token'],
-        'grant_type': 'authorization_code',
-    }
-    response = requests.post(url, headers=headers, data=body)
-
-    if response.status_code != 200:
-        return redirect('/', error='invalid token')
-
-    payload = response.json()
-    session['access_token'] = payload['access_token']
-    session['refresh_token'] = payload['refresh_token']
-    session['expiration'] = time.time() + payload['expires_in']
