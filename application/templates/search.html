@@ -1,0 +1,22 @@
+{% extends 'base.html' %} 
+
+{% block content %} 
+
+            
+<div id="background-card"></div>
+    <div id="search-card">
+        <form id="search-content" method="POST" name="input-form" id="search-form">
+            <label id="search-label" for="search-sentence">
+                give me a sentence. how you're feeling or what you're doing.
+                <br><br>
+                i'll give you a playlist.
+            </label>
+            <input type="text" name="input-sentence" id="input-sentence" class="search-sentence">
+            <input id="search-button" type="submit" value="analyze">
+    
+        </form>
+    </div>
+
+
+
+{% endblock %}

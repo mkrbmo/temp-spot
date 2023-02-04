@@ -1,5 +1,5 @@
 import os
-from flask import Flask, session
+from flask import Flask, render_template
 from transformers import pipeline
 
 def create_app(test_config=None):
@@ -27,7 +27,9 @@ def create_app(test_config=None):
     app.register_blueprint(authorize.bp)
     app.register_blueprint(routes.bp)
 
-    
+    @app.route('/home')
+    def home():
+        return render_template('test.html')
 
     return app
 

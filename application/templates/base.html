@@ -6,28 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{url_for('static', filename='script.js') }}"></script>
 </head>
 
 <body>
-    <header>
-        <div class="nav flex justify-center">
-            <div class="navbar">
-                <div class="nav-items flex">
-                    <a class='nav-item' href="{{ url_for('routes.home') }}">spotif</a>
-                    <a class='nav-item' href="{{ url_for('authorize.authorize') }}">connect</a>
-                    <a class='nav-item' href="{{ url_for('routes.fetch') }}">fetch</a>
-                    <a class='nav-item' href="{{ url_for('routes.analysis') }}">analyze</a>
-                    
-                </div>
-            </div>
-        </div>
+    <div id="container" >
+        <div class="background-tile"></div>
         
-    </header>
-
-<div class="flex justify-center">
-    <div class="main flex">
-        {% block content %} {% endblock %}
+            <header id="menu" >
+                
+                    <div class="nav-items">
+                        <a class="nav-item" href="{{ url_for('routes.home') }}">spot</a>
+                        <a class="nav-item" href="{{ url_for('authorize.authorize') }}">connect</a>
+                        <a class="nav-item" href="{{ url_for('routes.analysis') }}">analyze</a>
+                        <span class="nav-item" ></span>
+                        <a class="nav-item" href="#">...</a>
+                    </div>
+                
+            
+            </header>
+            
+            {% block content %} {% endblock %}
+            
     </div>
-</div>
 </body>
 </html>

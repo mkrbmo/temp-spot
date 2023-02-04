@@ -11,7 +11,7 @@ bp = Blueprint('authorize', __name__)
 #INITIATION VIEW FOR AUTHORIZING SPOTIFY CONNECTION
 @bp.route('/authorize/', methods=('GET', 'POST'))
 def authorize():
-    session.clear()
+    
     if request.method == 'POST':
         clientId = app.config['SPOTIFY_CLIENT_ID']
         redirectURI = app.config['SPOTIFY_REDIRECT_URI']
@@ -68,5 +68,5 @@ def callback():
 
     print('post token:', session)
     
-    return redirect('/fetch')
+    return redirect('/analysis')#CHANGE TO PREVIOUS URL
 
