@@ -53,24 +53,7 @@ def refresh_token(token):
 def generate_key(length):
     return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
-
-def format_reccomendation_data(form):
-    parameters = {}
-    del form['response']
-
-    for item in form:
-            if item == 'seed':
-                parameters[item] = form[item]
-            elif form[item] == 'low':
-                parameters[item] = {'min': 0.0, 'max': 0.35}
-            elif form[item] == 'mid':
-                parameters[item] = {'min': 0.35, 'max': 0.65}
-            elif form[item] == 'high':
-                parameters[item] = {'min': 0.65, 'max': 1.0}
-    return parameters
-
-
-def generate_reccomendation_url(emotion):
+def generate_reccomendation_url(emotion, limit=5):
 
     def transform_emotion_to_features(emotion):
         # structure: {'emotion': {'energy': 'level', 'valence': 'level', 'genre': [list,]}
@@ -89,7 +72,7 @@ def generate_reccomendation_url(emotion):
 
     parameters = transform_emotion_to_features(emotion)
 
-    limit = 5
+    
     seed = '%2C'.join(x.strip() for x in parameters['genre'])
     energy = parse_level(parameters['energy'])
     valence = parse_level(parameters['valence'])
@@ -98,3 +81,14 @@ def generate_reccomendation_url(emotion):
     
     return url
 
+def clean_track(track):
+    output = {}
+    output['album'] = track['album']['name']
+    output['artists'] = []
+    for artists in track['artists']:
+        output['artists'].append(artists['name'])
+    output['artists'] = ', '.join(output['artists'])
+    output['title'] = track['name']
+    output['cover_url'] = track['album']['images'][2]['url']
+    output['preview_url'] = track['preview_url']
+    return output    

@@ -1,13 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'card.html' %}
 
-{% block content %}
-    
-    <div class="form-card">
-        <form class="form-content flex-v" method="POST" name="analysis_form">
-            <label id="input_sentence_label" for="input_sentence">give me a sentence or two. what're you doing or feeling<br>i'll give you a playlist</label>
-            
+{% block card %}
             
             <input id="spotify" type="submit" value="connect to spotify">
-        </form>
-    </div>
 {% endblock %}

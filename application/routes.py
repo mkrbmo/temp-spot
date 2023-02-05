@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for
 import requests, json
 from application import pipe
-from application.functions import generate_reccomendation_url, format_reccomendation_data, check_token
+from application.functions import generate_reccomendation_url, check_token, clean_track
 
 bp = Blueprint('routes', __name__)
 
@@ -11,28 +11,9 @@ def home():
         return redirect(url_for('routes.analysis'))
     return redirect(url_for('authorize.authorize'))
 
-"""
-GENERAL FORM FOR FETCHING DATA FROM SPOTIFY API FOR DEVELOPMENT PURPOSES
-REMOVE FROM PRODUCTION SITE
-"""
-@bp.route('/fetch', methods=('GET', 'POST'))
-def fetch():
-    if request.method == 'POST':
-        input = request.form['inputURL']
-
-        base_url = 'https://api.spotify.com/v1/'
-        headers = {
-            'Authorization': 'Bearer ' + session['access_token']
-        }
-        
-        response = requests.get(base_url+input, headers=headers)
-
-        jsonData = response.text
-        jsonData = json.dumps(response.json(), indent=2)
-
-        return render_template('fetch.html', response=jsonData)
-
-    return render_template('fetch.html')
+@bp.route('/test')
+def test():
+    return render_template('test.html')
 
 """ 
 INPUT: user supplied string from form
@@ -42,7 +23,6 @@ RETURNS: list of reccomended song
 @bp.route('/analysis', methods=('GET', 'POST'))
 def analysis():
 
-
     if request.method == 'POST':
         
         token = check_token(session)
@@ -50,32 +30,57 @@ def analysis():
             session['previous_url'] = request.path
             return token
 
-
         input = request.form['input-sentence']
 
         emotion = pipe(input)[0][0]['label']
         
-        url = generate_reccomendation_url(emotion)
-        print(url)
+        limit = 30
+
+        url = generate_reccomendation_url(emotion, limit)
+        
         headers = {
             'Authorization': 'Bearer ' + session['access_token'],
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
         response = requests.get(url, headers=headers)
-        print(response.json())
+        
         #seeds = response.json()['seeds']
-        tracks = response.json()['tracks']
+        response_tracks = response.json()['tracks']
+        
+        
+        tracks = [clean_track(track) for track in response_tracks]
+
+        sent_tracks = tracks[0:10]
+        queued_tracks = tracks[10:]
+        
         
         
         
 
-
-        return render_template('results.html', tracks=tracks, sentence=input)
+        return render_template('results.html', tracks=sent_tracks, sentence=input, queue=queued_tracks)
 
     return render_template('search.html')
 
+"""
+@bp.route('/fetch_tracks')
+def fetch_tracks(url):
 
+    token = check_token(session)
+    if token:
+        session['previous_url'] = request.path
+        return token
+    url = session['saved_url']
+    headers = {
+            'Authorization': 'Bearer ' + session['access_token'],
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    response = requests.get(url, headers=headers)
+    response_tracks = response.json()['tracks']
+    tracks = [clean_track(track) for track in response_tracks]
+    return tracks
+"""
 
 
 

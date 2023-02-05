@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <script src="{{url_for('static', filename='script.js') }}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename='script.js') }}"></script>
+    {% block script %}{% endblock %}
 </head>
 
 <body>
