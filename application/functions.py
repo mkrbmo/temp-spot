@@ -1,5 +1,5 @@
 import random, string, requests, time, base64
-from flask import redirect
+from flask import redirect, session
 from flask import current_app as app
 """
 argument: client session
@@ -8,7 +8,6 @@ purpose: confirmed token hasn't expired before making request to spotify api
 """
 def check_token(session):
     if 'access_token' not in session:
-        
         return redirect('/authorize')
     elif session['expiration'] < time.time():
         response = refresh_token(session['refresh_token'])
@@ -81,6 +80,10 @@ def generate_reccomendation_url(emotion, limit=5):
     
     return url
 
+"""
+INPUT: SINGLE TRACK DICTIONARY FROM SPOTIFY API
+OUTPUT: CLEANED DICTIONARY 
+"""
 def clean_track(track):
     output = {}
     output['album'] = track['album']['name']
@@ -91,4 +94,22 @@ def clean_track(track):
     output['title'] = track['name']
     output['cover_url'] = track['album']['images'][2]['url']
     output['preview_url'] = track['preview_url']
-    return output    
+
+    return output
+
+"""
+INPUT: URL FOR FETCHING RECCOMENDATION FROM SPOTIFY API
+OUTPUT: DICTIONARY OF TRACKS WITH FORMAT "URL: TRACK DICT"
+"""
+def get_tracks(url):
+    headers = {
+            'Authorization': 'Bearer ' + session['access_token'],
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    
+    response = requests.get(url, headers=headers)
+    response_tracks = response.json()['tracks']
+    tracks = {track['uri']:clean_track(track) for track in response_tracks}
+
+    return tracks

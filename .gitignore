@@ -3,3 +3,4 @@
 data_cleaning.py
 spotify.csv
 .DS_store
+flask_session

@@ -1,6 +1,7 @@
-import os
+
 from flask import Flask, render_template
 from transformers import pipeline
+from flask_session import Session
 
 def create_app(test_config=None):
     # create and configure the app
@@ -22,6 +23,9 @@ def create_app(test_config=None):
     '''
 
     #NEED TO ADD CONTEXT 
+
+    sess = Session()
+    sess.init_app(app)
 
     from . import authorize, routes
     app.register_blueprint(authorize.bp)

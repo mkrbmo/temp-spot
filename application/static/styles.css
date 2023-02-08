@@ -18,7 +18,7 @@ html, body {
     margin: 0px;
     height: 100%;
     width: 100%;  
-    min-width: 400px;
+    min-width: 360px;
     font-family: monospace; 
 }
 #container {
@@ -139,6 +139,7 @@ html, body {
     width: 100%;
     height: 100%;
     z-index: -1;
+    background-color: rgb(237, 237, 237);
 }
 .background-tile::before{
     content: '';
@@ -180,7 +181,7 @@ html, body {
     outline: 1px black solid;
     outline-offset: 0;
 }
-#analyze_button {
+#analyze-button {
     border: none;
     background: none;
     padding:0 0.8rem;
@@ -188,7 +189,7 @@ html, body {
     font-family: inherit;
     cursor: pointer;
 }
-#options_button {
+#options-button {
     text-decoration: none;
     color: black;
     border: 1px solid black;
@@ -271,7 +272,7 @@ html, body {
     background-color: white;
 }
 
-/* NOT USED RN
+
 #modal-background {
     display: none;
     position: fixed;
@@ -282,16 +283,30 @@ html, body {
     width: 100%; 
     height: 100%; 
 }
-#dropdown {
+#modal-container {
    background: white;
    position: fixed;
    z-index: 1;
    padding: 10px;
    top: 30vh;
-   left: 10%;
+   width: 90%;
+   left: 5px;
    border: 2px solid black;
 }
-*/
+#modal-card {
+    display: flex;
+    flex-direction: column;
+}
+.slider {
+    display: flex;
+}
+.slider label {
+    flex-grow: 1;
+    padding-bottom: 20px;
+}
+
+
+
 
 
 /*
