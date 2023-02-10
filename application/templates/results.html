@@ -52,55 +52,81 @@
     {% endfor %}
     
     <div id="send" class="track-card">
-        <a id="send_button" href="#">send playlist to spotify</a>
+        <a id="send_card" href="#">send playlist to spotify</a>
     </div>
 
 </div>
 {% endblock %}
 
 {% block modal %}
-    <div class="modal-card">
+    <div id="options-modal" class="modal-card">
         <div id="modal-title" >options.</div>
 
-        <div class="slider">
+        <div class="model-item">
             <label for="track-track-popularity">popularity - </label>
             <input type="range" name="track-popularity" id="track-popularity"
                     min="0.0" max="1.0" step="0.1" oninput="this.nextElementSibling.value = this.value">
             <output></output>
         </div>
 
-        <div class="slider">
+        <div class="modal-item">
             <label for="track-track-instrumentalness">instrumentalness - </label>
             <input type="range" name="track-instrumentalness" id="track-instrumentalness"
                     min="0.0" max="1.0" step="0.1" oninput="this.nextElementSibling.value = this.value">
             <output></output>
         </div>
             
-        <div class="slider">
+        <div class="modal-item">
             <label for="playlist-length">length - </label>
             <input type="range" name="playlist-length" id="playlist-length"
                     min="10" max="30" oninput="this.nextElementSibling.value = this.value">
             <output></output>
         </div>
         
-        
-
-        <div class="slider">
+        <div class="modal-item">
             <label for="light-mode">light mode</label>
             <input type="radio" name="light-mode" id="light">
             <input type="radio" name="light-mode" id="dark">
             <input type="radio" name="light-mode" id="system">
         </div>
 
-        <div class="slider">
+        <div class="modal-item">
             <label for="reduce-motion">reduce motion</label>
             <input type="radio" name="reduce-motion" id="off" value="off">
             <input type="radio" name="reduce-motion" id="on" value="on">
         </div>
 
 
-        <input type="button" id="modal-cancel" value="cancel">
-        <input type="button" id="modal-submit" value="go">
+        <div class="modal-item">
+            <input type="button" class="modal-cancel" value="cancel">
+            <input type="button" class="modal-submit" value="go">
+        </div>
+    </div>
+
+    <div id="playlist-modal" class="modal-card">
+        <div class="modal-title">send playlist to spotify</div>
+    
+        <div class="modal-item">
+            <label for="playlist-name">name</label>
+            <input type="text" name="playlist-name">
+        </div>
+
+        <div class="modal-item">
+            <label for="playlist-description">description</label>
+            <input type="text" name="playlist-description">
+        </div>
+
+        <div class="modal-item">
+            <label for="public">visibility</label>
+            <input type="radio" name="public" value="public" checked>
+            <input type="radio" name="public" value="private">
+        </div>
+
+        <div class="modal-item">
+            <input type="button" class="modal-cancel" value="cancel">
+            <input type="button" id="send_button" class="modal-submit" value="go">
+        </div>
+
     </div>
 
 {% endblock %}

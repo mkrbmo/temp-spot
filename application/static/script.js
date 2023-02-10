@@ -1,7 +1,3 @@
-
-
-
-
 function addTrack (trackObject) {
   let uri = Object.entries(trackObject)[0][0]
   let track = Object.entries(trackObject)[0][1]
@@ -39,27 +35,39 @@ function addTrack (trackObject) {
 document.addEventListener('click', event => {
   if (event.target.matches('#options-button')) {
     document.getElementById('modal-background').style.display = 'block';
+    document.getElementById('options-modal').style.display = 'block';
   };
-  if (event.target.matches('#modal-cancel')) {
+  if (event.target.matches('.modal-cancel')) {
     document.getElementById('modal-background').style.display = 'none';
+    document.getElementById('options-modal').style.display = 'none';
+    document.getElementById('playlist-modal').style.display = 'none';
   };
   if (event.target.matches('#modal-submit')) {
     document.getElementById('modal-background').style.display = 'none';
   }
 
-});
-
-document.addEventListener('click', event => {
   if (event.target.matches('.track-delete')) {
-      uri = event.target.parentElement.parentElement.dataset.uri
-      
-      event.target.parentElement.parentElement.remove()
-      
-      fetch(`/swap_track/${uri}`)
-          .then(response => response.json())
-          .then(json => addTrack(json))
-          
+    uri = event.target.parentElement.parentElement.dataset.uri
+    
+    event.target.parentElement.parentElement.remove()
+    
+    fetch(`/swap_track/${uri}`)
+        .then(response => response.json())
+        .then(json => addTrack(json))
+  }
+  if (event.target.matches('#send_card')) {
+    document.getElementById('modal-background').style.display = 'block';
+    document.getElementById('playlist-modal').style.display = 'block';
+  }
+  if (event.target.matches('#send_button')){
+    let playlistName = "Moodrang"
+    let description = "none at all"
+    let public = false
+    fetch(`/send_playlist/${playlistName}/${public}/${description}`)
+      .then(response => console.log(response))
+
   }
 });
+
 
 

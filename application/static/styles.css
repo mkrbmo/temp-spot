@@ -263,7 +263,7 @@ html, body {
                 repeating-linear-gradient(-25deg,white, white 10px, transparent 10px, transparent 11px),
                 black;
 }
-#send_button {
+#send_card {
     padding: 15px;
     
     margin: 0 auto;
@@ -293,18 +293,20 @@ html, body {
    left: 5px;
    border: 2px solid black;
 }
-#modal-card {
+.modal-card {
     display: flex;
     flex-direction: column;
 }
-.slider {
+.modal-item {
     display: flex;
 }
-.slider label {
+.modal-item label {
     flex-grow: 1;
     padding-bottom: 20px;
 }
-
+#playlist-modal {
+    display: none;
+}
 
 
 

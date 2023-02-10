@@ -1,6 +1,8 @@
-import random, string, requests, time, base64
+import random, string, requests, time, base64, json
 from flask import redirect, session
 from flask import current_app as app
+
+
 """
 argument: client session
 returns: access token if not expired; refresh token if successfully refreshed; redirect to authorize if failure
@@ -52,13 +54,19 @@ def refresh_token(token):
 def generate_key(length):
     return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
-def generate_reccomendation_url(emotion, limit=5):
+"""
+INPUT:
+EMOTION
+"""
+def analyze_sentiment(sentence):
+    emotion = app.pipe(sentence)[0][0]['label']
+    conversions = {'admiration': {'energy': 'mid', 'valence': 'high', 'genre': ['alternative', ' happy', ' indie', ' pop']}, 'amusement': {'energy': 'mid', 'valence': 'mid', 'genre': ['happy', ' summer', ' electronic']}, 'anger': {'energy': 'high', 'valence': 'low', 'genre': ['punk rock', ' grunge', ' hard rock']}, 'annoyance': {'energy': 'low', 'valence': 'low', 'genre': ['industrial', ' ambient']}, 'approval': {'energy': 'mid', 'valence': 'mid', 'genre': ['acoustic', ' chill', ' progressive']}, 'caring': {'energy': 'low', 'valence': 'high', 'genre': ['singer-songwriter', ' songwriter']}, 'confusion': {'energy': 'low', 'valence': 'mid', 'genre': ['electro', ' industrial', ' trance']}, 'curiosity': {'energy': 'mid', 'valence': 'mid', 'genre': ['deep-house', ' progressive-house']}, 'desire': {'energy': 'low', 'valence': 'high', 'genre': ['romance', ' piano']}, 'disappointment': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' guitar']}, 'disapproval': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' guitar']}, 'disgust': {'energy': 'mid', 'valence': 'low', 'genre': ['ambient', ' sad', ' grunge']}, 'embarrassment': {'energy': 'low', 'valence': 'low', 'genre': ['industrial', ' minimal-techno']}, 'excitement': {'energy': 'high', 'valence': 'high', 'genre': ['party', ' edm']}, 'fear': {'energy': 'high', 'valence': 'low', 'genre': ['industrial', ' grunge']}, 'gratitude': {'energy': 'low', 'valence': 'high', 'genre': ['happy', ' summer', ' chill']}, 'grief': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' guitar']}, 'joy': {'energy': 'high', 'valence': 'high', 'genre': ['synth-pop', ' power-pop']}, 'love': {'energy': 'low', 'valence': 'high', 'genre': ['romance', ' r-n-b']}, 'nervousness': {'energy': 'high', 'valence': 'low', 'genre': ['industrial', ' trance']}, 'optimism': {'energy': 'mid', 'valence': 'high', 'genre': ['happy', ' new-age']}, 'pride': {'energy': 'high', 'valence': 'high', 'genre': ['party', ' happy', ' new-age']}, 'realization': {'energy': 'mid', 'valence': 'mid', 'genre': ['ambient', ' study']}, 'relief': {'energy': 'mid', 'valence': 'mid', 'genre': ['acoustic', ' chill', ' study']}, 'remorse': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' guitar']}, 'sadness': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' rainy-day']}, 'surprise': {'energy': 'high', 'valence': 'mid', 'genre': ['minimal-techno', ' house']}, 'neutral': {'energy': 'mid', 'valence': 'mid', 'genre': ['world-music', ' chill']}}
+    if emotion in conversions:
+        return conversions[emotion]
 
-    def transform_emotion_to_features(emotion):
-        # structure: {'emotion': {'energy': 'level', 'valence': 'level', 'genre': [list,]}
-        conversions = {'admiration': {'energy': 'mid', 'valence': 'high', 'genre': ['alternative', ' happy', ' indie', ' pop']}, 'amusement': {'energy': 'mid', 'valence': 'mid', 'genre': ['happy', ' summer', ' electronic']}, 'anger': {'energy': 'high', 'valence': 'low', 'genre': ['punk rock', ' grunge', ' hard rock']}, 'annoyance': {'energy': 'low', 'valence': 'low', 'genre': ['industrial', ' ambient']}, 'approval': {'energy': 'mid', 'valence': 'mid', 'genre': ['acoustic', ' chill', ' progressive']}, 'caring': {'energy': 'low', 'valence': 'high', 'genre': ['singer-songwriter', ' songwriter']}, 'confusion': {'energy': 'low', 'valence': 'mid', 'genre': ['electro', ' industrial', ' trance']}, 'curiosity': {'energy': 'mid', 'valence': 'mid', 'genre': ['deep-house', ' progressive-house']}, 'desire': {'energy': 'low', 'valence': 'high', 'genre': ['romance', ' piano']}, 'disappointment': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' guitar']}, 'disapproval': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' guitar']}, 'disgust': {'energy': 'mid', 'valence': 'low', 'genre': ['ambient', ' sad', ' grunge']}, 'embarrassment': {'energy': 'low', 'valence': 'low', 'genre': ['industrial', ' minimal-techno']}, 'excitement': {'energy': 'high', 'valence': 'high', 'genre': ['party', ' edm']}, 'fear': {'energy': 'high', 'valence': 'low', 'genre': ['industrial', ' grunge']}, 'gratitude': {'energy': 'low', 'valence': 'high', 'genre': ['happy', ' summer', ' chill']}, 'grief': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' guitar']}, 'joy': {'energy': 'high', 'valence': 'high', 'genre': ['synth-pop', ' power-pop']}, 'love': {'energy': 'low', 'valence': 'high', 'genre': ['romance', ' r-n-b']}, 'nervousness': {'energy': 'high', 'valence': 'low', 'genre': ['industrial', ' trance']}, 'optimism': {'energy': 'mid', 'valence': 'high', 'genre': ['happy', ' new-age']}, 'pride': {'energy': 'high', 'valence': 'high', 'genre': ['party', ' happy', ' new-age']}, 'realization': {'energy': 'mid', 'valence': 'mid', 'genre': ['ambient', ' study']}, 'relief': {'energy': 'mid', 'valence': 'mid', 'genre': ['acoustic', ' chill', ' study']}, 'remorse': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' guitar']}, 'sadness': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' rainy-day']}, 'surprise': {'energy': 'high', 'valence': 'mid', 'genre': ['minimal-techno', ' house']}, 'neutral': {'energy': 'mid', 'valence': 'mid', 'genre': ['world-music', ' chill']}}
-        if emotion in conversions:
-            return conversions[emotion]
+
+
+def generate_url(session):
 
     def parse_level(level):
         if level == 'low':
@@ -69,15 +77,23 @@ def generate_reccomendation_url(emotion, limit=5):
             return {'min': 0.65, 'max': 1.0}
 
 
-    parameters = transform_emotion_to_features(emotion)
+    limit = session['length'] + 10
+    seed = '%2C'.join(x.strip() for x in session['genre'])
+    energy = parse_level(session['energy'])
+    valence = parse_level(session['valence'])
+    instrumentalness = parse_level(session['instrumentalness'])
+    popularity = parse_level(session['popularity']) 
 
-    
-    seed = '%2C'.join(x.strip() for x in parameters['genre'])
-    energy = parse_level(parameters['energy'])
-    valence = parse_level(parameters['valence'])
+    url = f"""https://api.spotify.com/v1/recommendations
+            ?limit={limit}
+            &market=US
+            &seed_genres={seed}
+            &min_energy={energy['min']}&max_energy={energy['max']}
+            &min_instrumentalness={instrumentalness['min']}&max_instrumentalness={instrumentalness['max']}
+            &min_popularity={popularity['min']*100}&max_popularity={popularity['max']*100}
+            &min_valence={valence['max']}&max_valence={valence['max']}
+        """
 
-    url = f"https://api.spotify.com/v1/recommendations?limit={limit}&market=US&seed_genres={seed}&min_energy={energy['min']}&max_energy={energy['max']}&min_valence={valence['min']}&max_valence={valence['max']}"
-    
     return url
 
 """
@@ -87,13 +103,12 @@ OUTPUT: CLEANED DICTIONARY
 def clean_track(track):
     output = {}
     output['album'] = track['album']['name']
-    output['artists'] = []
-    for artists in track['artists']:
-        output['artists'].append(artists['name'])
-    output['artists'] = ', '.join(output['artists'])
+    output['artists'] = ', '.join([artist['name'] for artist in track['artists']])
     output['title'] = track['name']
-    output['cover_url'] = track['album']['images'][2]['url']
+    output['cover_url'] = track['album']['images'][2]['url'] #index two specifies small image size
     output['preview_url'] = track['preview_url']
+    output['uri'] = track['uri']
+    output['track_url'] = track['external_urls']['spotify']
 
     return output
 
@@ -113,3 +128,49 @@ def get_tracks(url):
     tracks = {track['uri']:clean_track(track) for track in response_tracks}
 
     return tracks
+
+def get_user():
+    url = "https://api.spotify.com/v1/me"
+    headers = {
+            'Authorization': 'Bearer ' + session['access_token'],
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    response = requests.get(url, headers=headers)
+    
+    return response
+
+def create_playlist(user_id, name, description, public):
+    url = f'https://api.spotify.com/v1/users/{user_id}/playlists'
+    
+    headers = {
+            'Authorization': 'Bearer ' + session['access_token'],
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    body = {
+        "name": f"{name}",
+        "description": f"{description}",
+        "public": False
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(body))
+    
+    return response
+    
+
+def populate_playlist(playlist_id):
+    print(session['current_tracks'].keys())
+    url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+    headers = {
+            'Authorization': 'Bearer ' + session['access_token'],
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    body = {
+        "uris": list(session['current_tracks'].keys())
+    }
+    print(session['current_tracks'].keys())
+    response = requests.post(url, headers=headers, data=json.dumps(body))
+
+    return response
+    

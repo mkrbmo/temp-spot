@@ -1,7 +1,19 @@
-from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify
+from flask import (
+    Blueprint, 
+    render_template, 
+    request, session, 
+    redirect, url_for, 
+    jsonify
+)
 import requests, json, random
 from application import pipe
-from application.functions import generate_reccomendation_url, check_token, get_tracks, clean_track
+from application.functions import (
+    generate_reccomendation_url, 
+    check_token, 
+    get_tracks, get_user, 
+    create_playlist, 
+    populate_playlist
+)
 
 bp = Blueprint('routes', __name__)
 
@@ -54,31 +66,9 @@ def analysis():
 
     return render_template('search.html')
 
-'''
-@bp.route('/fetch_tracks')
-def fetch_tracks(url):
-
-    token = check_token(session)
-    if token:
-        session['previous_url'] = request.path
-        return token
-
-    url = session['saved_url']
-
-    headers = {
-            'Authorization': 'Bearer ' + session['access_token'],
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    response = requests.get(url, headers=headers)
-    response_tracks = response.json()['tracks']
-    tracks = [clean_track(track) for track in response_tracks]
-    return tracks
-'''
 
 @bp.route('/swap_track/<uri>')
 def swap_track(uri):
-
     try:
         session['current_tracks'].pop(uri)
     except KeyError:
@@ -97,6 +87,25 @@ def swap_track(uri):
 
     return jsonify(new_track)
 
+@bp.route('/send_playlist/<name>/<public>/<description>')
+def send_playlist(name, public, description):
 
+    user_response = get_user()
+    if user_response.status_code != 200:
+        return {"error": "Invalid User ID"}
+    
+    user_id = user_response.json()['id']
+    playlist_response = create_playlist(user_id, name, description, public)
+    
+    
+    if playlist_response.status_code != 201:
+        return {"error": "Playlist Creation Error"}
 
+    playlist_id = playlist_response.json()['id']
+
+    population_response = populate_playlist(playlist_id)
+    if population_response.status_code != 201:
+        return {"error": "Playlist Population Error"}
+
+    return 'OK'
     
