@@ -1,6 +1,7 @@
 import random, string, requests, time, base64, json
 from flask import redirect, session
 from flask import current_app as app
+from application import pipe
 
 
 """
@@ -55,45 +56,32 @@ def generate_key(length):
     return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
 """
-INPUT:
-EMOTION
+INPUT: USER PROVIDED SENTENCE
+RETURNS: DICITONARY OF AUDIO FEATURES AND GENRES
 """
 def analyze_sentiment(sentence):
-    emotion = app.pipe(sentence)[0][0]['label']
-    conversions = {'admiration': {'energy': 'mid', 'valence': 'high', 'genre': ['alternative', ' happy', ' indie', ' pop']}, 'amusement': {'energy': 'mid', 'valence': 'mid', 'genre': ['happy', ' summer', ' electronic']}, 'anger': {'energy': 'high', 'valence': 'low', 'genre': ['punk rock', ' grunge', ' hard rock']}, 'annoyance': {'energy': 'low', 'valence': 'low', 'genre': ['industrial', ' ambient']}, 'approval': {'energy': 'mid', 'valence': 'mid', 'genre': ['acoustic', ' chill', ' progressive']}, 'caring': {'energy': 'low', 'valence': 'high', 'genre': ['singer-songwriter', ' songwriter']}, 'confusion': {'energy': 'low', 'valence': 'mid', 'genre': ['electro', ' industrial', ' trance']}, 'curiosity': {'energy': 'mid', 'valence': 'mid', 'genre': ['deep-house', ' progressive-house']}, 'desire': {'energy': 'low', 'valence': 'high', 'genre': ['romance', ' piano']}, 'disappointment': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' guitar']}, 'disapproval': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' guitar']}, 'disgust': {'energy': 'mid', 'valence': 'low', 'genre': ['ambient', ' sad', ' grunge']}, 'embarrassment': {'energy': 'low', 'valence': 'low', 'genre': ['industrial', ' minimal-techno']}, 'excitement': {'energy': 'high', 'valence': 'high', 'genre': ['party', ' edm']}, 'fear': {'energy': 'high', 'valence': 'low', 'genre': ['industrial', ' grunge']}, 'gratitude': {'energy': 'low', 'valence': 'high', 'genre': ['happy', ' summer', ' chill']}, 'grief': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' guitar']}, 'joy': {'energy': 'high', 'valence': 'high', 'genre': ['synth-pop', ' power-pop']}, 'love': {'energy': 'low', 'valence': 'high', 'genre': ['romance', ' r-n-b']}, 'nervousness': {'energy': 'high', 'valence': 'low', 'genre': ['industrial', ' trance']}, 'optimism': {'energy': 'mid', 'valence': 'high', 'genre': ['happy', ' new-age']}, 'pride': {'energy': 'high', 'valence': 'high', 'genre': ['party', ' happy', ' new-age']}, 'realization': {'energy': 'mid', 'valence': 'mid', 'genre': ['ambient', ' study']}, 'relief': {'energy': 'mid', 'valence': 'mid', 'genre': ['acoustic', ' chill', ' study']}, 'remorse': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' guitar']}, 'sadness': {'energy': 'low', 'valence': 'low', 'genre': ['sad', ' piano', ' rainy-day']}, 'surprise': {'energy': 'high', 'valence': 'mid', 'genre': ['minimal-techno', ' house']}, 'neutral': {'energy': 'mid', 'valence': 'mid', 'genre': ['world-music', ' chill']}}
+    emotion = pipe(sentence)[0][0]['label']
+    conversions = {'admiration': {'min_valence': 0.65, 'max_valence': 1.0, 'min_energy': 0.35, 'max_energy': 0.65, 'genre': 'alternative, happy, indie, pop'}, 'amusement': {'min_valence': 0.35, 'max_valence': 0.65, 'min_energy': 0.35, 'max_energy': 0.65, 'genre': 'happy, summer, electronic'}, 'anger': {'min_valence': 0.0, 'max_valence': 0.35, 'min_energy': 0.65, 'max_energy': 1.0, 'genre': 'punk rock, grunge, hard rock'}, 'annoyance': {'min_valence': 0.0, 'max_valence': 0.35, 'min_energy': 0.0, 'max_energy': 0.35, 'genre': 'industrial, ambient'}, 'approval': {'min_valence': 0.35, 'max_valence': 0.65, 'min_energy': 0.35, 'max_energy': 0.65, 'genre': 'acoustic, chill, progressive'}, 'caring': {'min_valence': 0.65, 'max_valence': 1.0, 'min_energy': 0.0, 'max_energy': 0.35, 'genre': 'singer-songwriter, songwriter'}, 'confusion': {'min_valence': 0.35, 'max_valence': 0.65, 'min_energy': 0.0, 'max_energy': 0.35, 'genre': 'electro, industrial, trance'}, 'curiosity': {'min_valence': 0.35, 'max_valence': 0.65, 'min_energy': 0.35, 'max_energy': 0.65, 'genre': 'deep-house, progressive-house'}, 'desire': {'min_valence': 0.65, 'max_valence': 1.0, 'min_energy': 0.0, 'max_energy': 0.35, 'genre': 'romance, piano'}, 'disappointment': {'min_valence': 0.0, 'max_valence': 0.35, 'min_energy': 0.0, 'max_energy': 0.35, 'genre': 'sad, piano, guitar'}, 'disapproval': {'min_valence': 0.0, 'max_valence': 0.35, 'min_energy': 0.0, 'max_energy': 0.35, 'genre': 'sad, piano, guitar'}, 'disgust': {'min_valence': 0.0, 'max_valence': 0.35, 'min_energy': 0.35, 'max_energy': 0.65, 'genre': 'ambient, sad, grunge'}, 'embarrassment': {'min_valence': 0.0, 'max_valence': 0.35, 'min_energy': 0.0, 'max_energy': 0.35, 'genre': 'industrial, minimal-techno'}, 'excitement': {'min_valence': 0.65, 'max_valence': 1.0, 'min_energy': 0.65, 'max_energy': 1.0, 'genre': 'party, edm'}, 'fear': {'min_valence': 0.0, 'max_valence': 0.35, 'min_energy': 0.65, 'max_energy': 1.0, 'genre': 'industrial, grunge'}, 'gratitude': {'min_valence': 0.65, 'max_valence': 1.0, 'min_energy': 0.0, 'max_energy': 0.35, 'genre': 'happy, summer, chill'}, 'grief': {'min_valence': 0.0, 'max_valence': 0.35, 'min_energy': 0.0, 'max_energy': 0.35, 'genre': 'sad, piano, guitar'}, 'joy': {'min_valence': 0.65, 'max_valence': 1.0, 'min_energy': 0.65, 'max_energy': 1.0, 'genre': 'synth-pop, power-pop'}, 'love': {'min_valence': 0.65, 'max_valence': 1.0, 'min_energy': 0.0, 'max_energy': 0.35, 'genre': 'romance, r-n-b'}, 'nervousness': {'min_valence': 0.0, 'max_valence': 0.35, 'min_energy': 0.65, 'max_energy': 1.0, 'genre': 'industrial, trance'}, 'optimism': {'min_valence': 0.65, 'max_valence': 1.0, 'min_energy': 0.35, 'max_energy': 0.65, 'genre': 'happy, new-age'}, 'pride': {'min_valence': 0.65, 'max_valence': 1.0, 'min_energy': 0.65, 'max_energy': 1.0, 'genre': 'party, happy, new-age'}, 'realization': {'min_valence': 0.35, 'max_valence': 0.65, 'min_energy': 0.35, 'max_energy': 0.65, 'genre': 'ambient, study'}, 'relief': {'min_valence': 0.35, 'max_valence': 0.65, 'min_energy': 0.35, 'max_energy': 0.65, 'genre': 'acoustic, chill, study'}, 'remorse': {'min_valence': 0.0, 'max_valence': 0.35, 'min_energy': 0.0, 'max_energy': 0.35, 'genre': 'sad, piano, guitar'}, 'sadness': {'min_valence': 0.0, 'max_valence': 0.35, 'min_energy': 0.0, 'max_energy': 0.35, 'genre': 'sad, piano, rainy-day'}, 'surprise': {'min_valence': 0.35, 'max_valence': 0.65, 'min_energy': 0.65, 'max_energy': 1.0, 'genre': 'minimal-techno, house'}, 'neutral': {'min_valence': 0.35, 'max_valence': 0.65, 'min_energy': 0.35, 'max_energy': 0.65, 'genre': 'world-music, chill'}}
     if emotion in conversions:
         return conversions[emotion]
 
 
 
-def generate_url(session):
+def generate_url(features):
 
-    def parse_level(level):
-        if level == 'low':
-            return {'min': 0.0, 'max': 0.35}
-        elif level == 'mid':
-            return{'min': 0.35, 'max': 0.65}
-        elif level == 'high':
-            return {'min': 0.65, 'max': 1.0}
+    limit = int(features['length']) + 10
+    seed = features['genre'].replace(', ','%2C')
+    
+    
 
+    url = f"https://api.spotify.com/v1/recommendations?limit={limit}&market=US&seed_genres={seed}&max-popularity=0.5"
+    
+    for feature, value in features.items():
+        if feature == 'length' or feature == 'genre':
+            continue
 
-    limit = session['length'] + 10
-    seed = '%2C'.join(x.strip() for x in session['genre'])
-    energy = parse_level(session['energy'])
-    valence = parse_level(session['valence'])
-    instrumentalness = parse_level(session['instrumentalness'])
-    popularity = parse_level(session['popularity']) 
-
-    url = f"""https://api.spotify.com/v1/recommendations
-            ?limit={limit}
-            &market=US
-            &seed_genres={seed}
-            &min_energy={energy['min']}&max_energy={energy['max']}
-            &min_instrumentalness={instrumentalness['min']}&max_instrumentalness={instrumentalness['max']}
-            &min_popularity={popularity['min']*100}&max_popularity={popularity['max']*100}
-            &min_valence={valence['max']}&max_valence={valence['max']}
-        """
-
+        url += ('&'+feature+"="+str(value))
+        
     return url
 
 """
@@ -124,10 +112,43 @@ def get_tracks(url):
         }
     
     response = requests.get(url, headers=headers)
-    response_tracks = response.json()['tracks']
-    tracks = {track['uri']:clean_track(track) for track in response_tracks}
+    
+    if response.status_code == 200:
+        response_tracks = response.json()['tracks']
+        tracks = {track['uri']:clean_track(track) for track in response_tracks}
 
-    return tracks
+        return tracks
+    print(response.status_code)
+    return None
+
+
+def populate_tracks(sentence):
+    features = analyze_sentiment(sentence)
+    for feature in features:
+        session['features'][feature] = features[feature]
+    
+    url = generate_url(session['features'])
+    session['current_url'] = url
+    print(url)
+    tracks = get_tracks(url)
+    
+    if tracks == None:
+        return None
+
+    #arbitrary separation of first 10 tracks by URI
+    keys = [_ for _ in tracks.keys()]
+    current = keys[:session['features']['length']]
+    queued = keys[session['features']['length']:]
+
+    session['all_tracks'] = keys
+    session['current_tracks'] = {k:tracks[k] for k in current}
+    #print(session['current_tracks'])
+    session['queued_tracks'] = {k:tracks[k] for k in queued}
+    session['queued_keys'] = queued
+
+    return session['current_tracks']
+
+
 
 def get_user():
     url = "https://api.spotify.com/v1/me"
@@ -139,6 +160,7 @@ def get_user():
     response = requests.get(url, headers=headers)
     
     return response
+
 
 def create_playlist(user_id, name, description, public):
     url = f'https://api.spotify.com/v1/users/{user_id}/playlists'

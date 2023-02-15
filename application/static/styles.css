@@ -214,6 +214,18 @@ html, body {
     box-shadow: inset 2px 2px black;
     max-height: 66px;
 }
+.legend-card {
+    border: 1px solid black;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: inset 2px 2px black;
+    max-height: 66px;
+    margin: 15px 15px 0 15px;
+    font-size: 11px;
+    padding: 10px 5px 10px 10px;
+}
 .track-info{
     width: 60%;
     

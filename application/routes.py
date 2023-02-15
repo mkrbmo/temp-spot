@@ -8,17 +8,18 @@ from flask import (
 import requests, json, random
 from application import pipe
 from application.functions import (
-    generate_reccomendation_url, 
     check_token, 
     get_tracks, get_user, 
     create_playlist, 
-    populate_playlist
+    populate_playlist,
+    populate_tracks
 )
 
 bp = Blueprint('routes', __name__)
 
 @bp.route('/')
 def home():
+    session.clear()
     if check_token(session) != None:
         return redirect(url_for('authorize.authorize'))
     return redirect(url_for('routes.analysis'))
@@ -37,47 +38,43 @@ RETURNS: list of reccomended song
 def analysis():
 
     if request.method == 'POST':
-        limit = 15
         
-        token = check_token(session)
-        if token:
-            session['previous_url'] = request.path
-            return token
+        if not session.get('features'):
+            session['features'] = {}
+            session['features']['target_popularity'] = 40
+            session['features']['length'] = 20
 
-        input = request.form['input-sentence']
-        emotion = pipe(input)[0][0]['label']
+        if check_token(session) != None:
+            return redirect(url_for('authorize.authorize'))
         
-        url = generate_reccomendation_url(emotion, limit)
-        session['current_fetch_url'] = url
-
-        tracks = get_tracks(url)
-
-        #arbitrary separation of first 10 tracks by URI
-        keys = [_ for _ in tracks.keys()]
-        current = keys[:10]
-        queued = keys[10:15]
-
-        session['all_tracks'] = keys
-        session['current_tracks'] = {k:tracks[k] for k in current}
-        session['queued_tracks'] = {k:tracks[k] for k in queued}
-        session['queued_keys'] = queued
-
-        return render_template('results.html', sentence=input)
+        sentence = request.form['input-sentence']
+        
+        populate_tracks(sentence)
+        
+        return render_template('results.html', sentence=sentence)
 
     return render_template('search.html')
 
 
-@bp.route('/swap_track/<uri>')
-def swap_track(uri):
+@bp.route('/delete_track/<uri>')
+def delete_track(uri):
     try:
         session['current_tracks'].pop(uri)
+        return "OK"
     except KeyError:
         pass #add funcitonality
+
+@bp.route('/add_track')
+def add_track():
+
     key = session['queued_keys'].pop()
-    new_track = {key: session['queued_tracks'].pop(key, None)}
+    new_track = session['queued_tracks'].pop(key, None)
     session['current_tracks'].update(new_track)
     
     if len(session['queued_tracks']) < 3:
+        if check_token(session) != None:
+            return redirect(url_for('authorize.authorize'))
+        #ADD REROUTING FOR PREVIOUS URL
         tracks = get_tracks(session['current_fetch_url'])
         
         for uri, track in tracks.items():
@@ -93,14 +90,11 @@ def send_playlist(name, public, description):
     user_response = get_user()
     if user_response.status_code != 200:
         return {"error": "Invalid User ID"}
-    
     user_id = user_response.json()['id']
+
     playlist_response = create_playlist(user_id, name, description, public)
-    
-    
     if playlist_response.status_code != 201:
         return {"error": "Playlist Creation Error"}
-
     playlist_id = playlist_response.json()['id']
 
     population_response = populate_playlist(playlist_id)
@@ -108,4 +102,19 @@ def send_playlist(name, public, description):
         return {"error": "Playlist Population Error"}
 
     return 'OK'
+    
+@bp.route('/update_options', methods=('GET', 'POST'))
+def update_options():
+    responses = request.get_json()
+    session['features']['target_popularity'] = responses['popularity']
+    session['features']['target_instrumentalness'] = responses['instrumentalness']
+    session['features']['length'] = int(responses['length'])
+    
+    if check_token(session) != None:
+            return redirect(url_for('authorize.authorize'))
+        
+    tracks = populate_tracks(responses['prompt'])
+    print(tracks)
+    return jsonify(tracks)
+    
     

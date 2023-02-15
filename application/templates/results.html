@@ -16,7 +16,7 @@
             
     <div class="" id="form-card">
         <form id="form-content" method="POST" name="analysis_form" id="analysis_form">
-            <input type="text" name="input-sentence" class="input_sentence" placeholder="{{ sentence }}" required>
+            <input type="text" id="input-sentence" name="input-sentence" class="input-sentence" value="{{ sentence }}" required>
             
             <input id="analyze-button" type="submit" value="analyze">
             <a id="options-button" href="#">|||</a>
@@ -30,6 +30,12 @@
 
 <div id="content" class="content">
     
+    <div id="legend-card" class="legend-card">
+        <div>Track</div>
+        <div>Album</div>
+        <input type="button" id="track-add" value="add track">
+    </div>
+
     {% for uri, track in session['current_tracks'].items() %}
     <div class="track-card" data-uri="{{ uri }}">
         
@@ -51,7 +57,7 @@
     
     {% endfor %}
     
-    <div id="send" class="track-card">
+    <div id="send" class="legend-card">
         <a id="send_card" href="#">send playlist to spotify</a>
     </div>
 
@@ -65,7 +71,7 @@
         <div class="model-item">
             <label for="track-track-popularity">popularity - </label>
             <input type="range" name="track-popularity" id="track-popularity"
-                    min="0.0" max="1.0" step="0.1" oninput="this.nextElementSibling.value = this.value">
+                    min="1" max="100" step="1" oninput="this.nextElementSibling.value = this.value">
             <output></output>
         </div>
 
@@ -83,23 +89,12 @@
             <output></output>
         </div>
         
-        <div class="modal-item">
-            <label for="light-mode">light mode</label>
-            <input type="radio" name="light-mode" id="light">
-            <input type="radio" name="light-mode" id="dark">
-            <input type="radio" name="light-mode" id="system">
-        </div>
-
-        <div class="modal-item">
-            <label for="reduce-motion">reduce motion</label>
-            <input type="radio" name="reduce-motion" id="off" value="off">
-            <input type="radio" name="reduce-motion" id="on" value="on">
-        </div>
+        
 
 
         <div class="modal-item">
             <input type="button" class="modal-cancel" value="cancel">
-            <input type="button" class="modal-submit" value="go">
+            <input type="button" id="options-send" class="modal-submit" value="go">
         </div>
     </div>
 
@@ -108,12 +103,12 @@
     
         <div class="modal-item">
             <label for="playlist-name">name</label>
-            <input type="text" name="playlist-name">
+            <input type="text" name="playlist-name" id="playlist-name">
         </div>
 
         <div class="modal-item">
             <label for="playlist-description">description</label>
-            <input type="text" name="playlist-description">
+            <input type="text" name="playlist-description" id="playlist-description">
         </div>
 
         <div class="modal-item">
@@ -124,7 +119,7 @@
 
         <div class="modal-item">
             <input type="button" class="modal-cancel" value="cancel">
-            <input type="button" id="send_button" class="modal-submit" value="go">
+            <input type="button" id="playlist-send" class="modal-submit" value="go">
         </div>
 
     </div>

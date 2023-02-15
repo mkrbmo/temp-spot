@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template
+from flask import Flask, session
 from transformers import pipeline
 from flask_session import Session
 
@@ -31,10 +31,9 @@ def create_app(test_config=None):
     app.register_blueprint(authorize.bp)
     app.register_blueprint(routes.bp)
 
-    @app.route('/home')
-    def home():
-        return render_template('test.html')
+    
 
     return app
 
 pipe = pipeline('sentiment-analysis', model="arpanghoshal/EmoRoBERTa", top_k=None)
+

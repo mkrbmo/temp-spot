@@ -1,7 +1,5 @@
-function addTrack (trackObject) {
-  let uri = Object.entries(trackObject)[0][0]
-  let track = Object.entries(trackObject)[0][1]
-   
+function addTrack (track) {
+  
   let album = track.album
   let cover_url = track.cover_url
   let artists = track.artists
@@ -9,7 +7,7 @@ function addTrack (trackObject) {
 
   let div = document.createElement('div')
   div.className = 'track-card'
-  div.dataset.uri = uri
+  div.dataset.uri = track.uri
   
   let base = 
     `<img class="track-image" src="${cover_url}" alt="">
@@ -32,6 +30,7 @@ function addTrack (trackObject) {
   send.insertAdjacentElement('beforebegin', div)
 };
 
+
 document.addEventListener('click', event => {
   if (event.target.matches('#options-button')) {
     document.getElementById('modal-background').style.display = 'block';
@@ -42,27 +41,80 @@ document.addEventListener('click', event => {
     document.getElementById('options-modal').style.display = 'none';
     document.getElementById('playlist-modal').style.display = 'none';
   };
-  if (event.target.matches('#modal-submit')) {
+  if (event.target.matches('.modal-submit')) {
     document.getElementById('modal-background').style.display = 'none';
-  }
-
-  if (event.target.matches('.track-delete')) {
-    uri = event.target.parentElement.parentElement.dataset.uri
-    
-    event.target.parentElement.parentElement.remove()
-    
-    fetch(`/swap_track/${uri}`)
-        .then(response => response.json())
-        .then(json => addTrack(json))
   }
   if (event.target.matches('#send_card')) {
     document.getElementById('modal-background').style.display = 'block';
     document.getElementById('playlist-modal').style.display = 'block';
   }
-  if (event.target.matches('#send_button')){
-    let playlistName = "Moodrang"
-    let description = "none at all"
-    let public = false
+
+
+  if (event.target.matches('.track-delete')) {
+    uri = event.target.parentElement.parentElement.dataset.uri
+    event.target.parentElement.parentElement.remove()
+    
+    fetch(`/delete_track/${uri}`)
+  
+  }
+
+  if (event.target.matches('#track-add')) {
+    fetch('/add_track')
+    .then(response => response.json())
+    .then(track => {
+      addTrack(track)
+    })
+  }
+
+
+
+
+
+  if (event.target.matches('#options-send')) {
+    let popularity = document.getElementById('track-popularity').value
+    let instrumentalness = document.getElementById('track-instrumentalness').value
+    let length = document.getElementById('playlist-length').value
+    let prompt = document.getElementById('input-sentence').value
+    
+    let formData = new FormData();
+    formData.append('input-sentence', prompt);
+    formData.append("test", "test value")
+    
+    fetch(`/update_options`,
+     {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body : JSON.stringify( {
+          'popularity': popularity,
+          'instrumentalness' : instrumentalness,
+          'length': length,
+          'prompt': prompt
+        })
+      }).then(response => response.json())
+        .then(newTracks => {
+          let cards = document.querySelectorAll('.track-card')
+          cards.forEach((card) =>
+            card.remove()
+          )
+          for (let newTrack in newTracks) {
+            addTrack(newTracks[newTrack])
+          }
+        })
+
+          
+        
+      
+  
+  }
+  
+  if (event.target.matches('#playlist-send')){
+    let playlistName = document.getElementById('playlist-name').value
+    let description = document.getElementById('playlist-description').value
+    let public = document.querySelector('input[name="public"]:checked').value;
+    
     fetch(`/send_playlist/${playlistName}/${public}/${description}`)
       .then(response => console.log(response))
 
