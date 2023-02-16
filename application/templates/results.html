@@ -37,7 +37,7 @@
     </div>
 
     {% for uri, track in session['current_tracks'].items() %}
-    <div class="track-card" data-uri="{{ uri }}">
+    <div class="track-card" data-uri="{{ uri }}" data-url="{{ track['track_url'] }}" data-preview="{{ track['preview_url']}}">
         
         
         <img class="track-image" src="{{ track['cover_url'] }}" alt="">
@@ -50,7 +50,7 @@
             <div class="track-album">{{ track['album'] }}</div>
         <div class="track-controls">
             <a href="#" class="track-delete">x</a>
-            <a href="#" class="track-share">+</a>
+            <a href="#" class="track-link">+</a>
             
         </div>
     </div>

@@ -8,6 +8,7 @@ function addTrack (track) {
   let div = document.createElement('div')
   div.className = 'track-card'
   div.dataset.uri = track.uri
+  div.dataset.url = track.track_url
   
   let base = 
     `<img class="track-image" src="${cover_url}" alt="">
@@ -30,6 +31,8 @@ function addTrack (track) {
   send.insertAdjacentElement('beforebegin', div)
 };
 
+let audio, current
+ 
 
 document.addEventListener('click', event => {
   if (event.target.matches('#options-button')) {
@@ -119,6 +122,34 @@ document.addEventListener('click', event => {
       .then(response => console.log(response))
 
   }
+  if (event.target.matches('.track-link')) {
+    let trackUrl = event.target.parentElement.parentElement.dataset.url
+    window.open(trackUrl, '_blank');
+  }
+
+  if (audio != undefined && !audio.paused && event.target != current) {
+    audio.pause()
+  }
+
+  if (event.target.matches('.track-image')) {
+    
+    if (event.target != current){
+      
+      current = event.target 
+      let audioUrl = event.target.parentElement.dataset.preview
+      if (audioUrl == "None") {
+        return
+      }
+      audio = new Audio(audioUrl)
+      audio.play()
+
+    } else if (!audio.paused) {
+      audio.pause()
+    } else if (audio.paused) {
+      audio.play()
+    }
+  }
+      
 });
 
 

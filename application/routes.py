@@ -6,7 +6,7 @@ from flask import (
     jsonify
 )
 import requests, json, random
-from application import pipe
+
 from application.functions import (
     check_token, 
     get_tracks, get_user, 
@@ -98,6 +98,7 @@ def send_playlist(name, public, description):
     playlist_id = playlist_response.json()['id']
 
     population_response = populate_playlist(playlist_id)
+    print(population_response.text)
     if population_response.status_code != 201:
         return {"error": "Playlist Population Error"}
 
