@@ -1,7 +1,7 @@
 import random, string, requests, time, base64, json
 from flask import redirect, session
 from flask import current_app as app
-from application import pipe
+
 from . import logic
 
 
@@ -56,33 +56,44 @@ def refresh_token(token):
 def generate_key(length):
     return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
+
+
 """
-INPUT: USER PROVIDED SENTENCE
-RETURNS: DICITONARY OF AUDIO FEATURES AND GENRES
+INPUT: SEED ARTIST ID + SEED TRACK IDS AND POPULARITY FROM SESSION
+OUTPUT: SEARCH URL
 """
-def analyze_sentiment(sentence):
-    emotion = pipe(sentence)[0][0]['label']
-    if emotion in logic.conversions:
-        return logic.conversions[emotion]
+def generate_url(id):
+    #limit = int(session['features']['length']) + 10
 
-
-
-def generate_url(features):
-
-    limit = int(features['length']) + 10
-    seed = features['genre'].replace(', ','%2C')
-    
-    
-
-    url = f"https://api.spotify.com/v1/recommendations?limit={limit}&market=US&seed_genres={seed}&max-popularity=0.5"
-    
-    for feature, value in features.items():
-        if feature == 'length' or feature == 'genre':
-            continue
-
-        url += ('&'+feature+"="+str(value))
-        
+    url = f"https://api.spotify.com/v1/recommendations?limit=30&market=US&max-popularity={session['url']['popularity']}&seed_artists={id}"
+    if session['tracks'].get('seed_tracks'):
+        seeds = "%2C".join(session['tracks']['seed_tracks'])
+        url += seeds
     return url
+
+
+"""
+INPUT: ARTIST NAME TO QUERY
+OUTPUT: TOP THREE RESULTS FROM SPOTIFY IN FORMAT (NAME, ID)
+"""
+def search_artist(input):
+    
+    query = input.replace(' ','%20')
+    url = f"https://api.spotify.com/v1/search?q={query}&type=artist&market=US&limit=3"
+    headers = {
+            'Authorization': 'Bearer ' + session['access_token'],
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    response = requests.get(url, headers=headers)
+    print(response)
+    return response.json()
+
+def scrub_artist(response_object):
+    top_three = [(artist['name'], artist['id']) for artist in response_object['artists']['items']]
+    return top_three
+
+
 
 """
 INPUT: SINGLE TRACK DICTIONARY FROM SPOTIFY API
@@ -104,7 +115,11 @@ def clean_track(track):
 INPUT: URL FOR FETCHING RECCOMENDATION FROM SPOTIFY API
 OUTPUT: DICTIONARY OF TRACKS WITH FORMAT "URL: TRACK DICT"
 """
-def get_tracks(url):
+def get_tracks():
+    url = generate_url(session['url']['artist_id'])
+    session['url']['previous'] = url
+    
+
     headers = {
             'Authorization': 'Bearer ' + session['access_token'],
             'Content-Type': 'application/json',
@@ -113,41 +128,16 @@ def get_tracks(url):
     
     response = requests.get(url, headers=headers)
     
-    if response.status_code == 200:
-        response_tracks = response.json()['tracks']
-        tracks = {track['uri']:clean_track(track) for track in response_tracks}
-
-        return tracks
-    print(response.status_code)
-    return None
-
-
-def populate_tracks(sentence):
-    features = analyze_sentiment(sentence)
-    for feature in features:
-        session['features'][feature] = features[feature]
-    
-    url = generate_url(session['features'])
-    session['current_url'] = url
-    print(url)
-    tracks = get_tracks(url)
-    
-    if tracks == None:
+    if response.status_code not in range(200,299):
+        print(response.status_code, response.content)
         return None
 
-    #arbitrary separation of first 10 tracks by URI
-    keys = [_ for _ in tracks.keys()]
-    current = keys[:session['features']['length']]
-    queued = keys[session['features']['length']:]
+    response_tracks = response.json()['tracks']
+    tracks = {track['uri']:clean_track(track) for track in response_tracks}
 
-    session['all_tracks'] = keys
-    session['current_tracks'] = {k:tracks[k] for k in current}
-    #print(session['current_tracks'])
-    session['queued_tracks'] = {k:tracks[k] for k in queued}
-    session['queued_keys'] = queued
+    return tracks
 
-    return session['current_tracks']
-
+    
 
 
 def get_user():

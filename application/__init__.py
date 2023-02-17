@@ -35,5 +35,5 @@ def create_app(test_config=None):
 
     return app
 
-pipe = pipeline('sentiment-analysis', model="arpanghoshal/EmoRoBERTa", top_k=None)
+#pipe = pipeline('sentiment-analysis', model="arpanghoshal/EmoRoBERTa", top_k=None)
 

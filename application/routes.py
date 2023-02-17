@@ -5,14 +5,15 @@ from flask import (
     redirect, url_for, 
     jsonify
 )
-import requests, json, random
 
 from application.functions import (
     check_token, 
     get_tracks, get_user, 
     create_playlist, 
     populate_playlist,
-    populate_tracks
+    
+    scrub_artist,
+    search_artist,
 )
 
 bp = Blueprint('routes', __name__)
@@ -39,19 +40,36 @@ def analysis():
 
     if request.method == 'POST':
         
-        if not session.get('features'):
-            session['features'] = {}
-            session['features']['target_popularity'] = 40
-            session['features']['length'] = 20
-
+        if not session.get('url'):
+            session['url'] = {}
+            session['tracks'] = {}
+            session['url']['popularity'] = 40
+            session['url']['length'] = 20
+        
         if check_token(session) != None:
             return redirect(url_for('authorize.authorize'))
         
-        sentence = request.form['input-sentence']
+        seed_artist = request.form['input-artist']
         
-        populate_tracks(sentence)
+        three = scrub_artist(search_artist(seed_artist))
+        artist_id = three[0][1]
+        session['url']['artist_id'] = artist_id
+        session['url']['artist_name'] = three[0][0]
         
-        return render_template('results.html', sentence=sentence)
+        tracks = get_tracks()
+        if tracks == None:
+            return render_template('search.html', error='something went wrong')
+
+        track_uris = [_ for _ in tracks.keys()]
+        current_uris = track_uris[:session['url']['length']]
+        queued_uris = track_uris[session['url']['length']:]
+
+        session['tracks']['omit'] = current_uris
+        session['tracks']['current'] = {k:tracks[k] for k in current_uris}
+        session['tracks']['queue'] = [{k:tracks[k]} for k in queued_uris]
+        
+
+        return render_template('results.html')
 
     return render_template('search.html')
 
@@ -59,31 +77,34 @@ def analysis():
 @bp.route('/delete_track/<uri>')
 def delete_track(uri):
     try:
-        session['current_tracks'].pop(uri)
+        session['tracks']['current'].pop(uri)
         return "OK"
     except KeyError:
         pass #add funcitonality
 
+
 @bp.route('/add_track')
 def add_track():
 
-    key = session['queued_keys'].pop()
-    new_track = session['queued_tracks'].pop(key, None)
-    session['current_tracks'].update(new_track)
+    new_track = session['tracks']['queue'].pop()
+    print(dict(new_track.values()))
+    session['tracks']['current'].update(new_track)
     
-    if len(session['queued_tracks']) < 3:
+    if len(session['tracks']['queue']) < 3:
         if check_token(session) != None:
             return redirect(url_for('authorize.authorize'))
         #ADD REROUTING FOR PREVIOUS URL
-        tracks = get_tracks(session['current_fetch_url'])
+        tracks = get_tracks()
         
-        for uri, track in tracks.items():
-            if uri not in session['all_tracks']:
-                session['queued_keys'].append(uri)
-                session['queued_tracks'].update({uri:track})
+        if tracks != None:
+            for uri, track in tracks.items():
+                if uri not in session['tracks']['omit']:
+                    session['tracks']['queue'].append({uri:track})
 
     return jsonify(new_track)
 
+
+'''
 @bp.route('/send_playlist/<name>/<public>/<description>')
 def send_playlist(name, public, description):
 
@@ -117,5 +138,5 @@ def update_options():
     tracks = populate_tracks(responses['prompt'])
     print(tracks)
     return jsonify(tracks)
-    
+'''
     

@@ -55,9 +55,12 @@ document.addEventListener('click', event => {
 
   if (event.target.matches('.track-delete')) {
     uri = event.target.parentElement.parentElement.dataset.uri
-    event.target.parentElement.parentElement.remove()
-    
     fetch(`/delete_track/${uri}`)
+    .then(response => {
+      if (response.statusText == "OK") {
+        event.target.parentElement.parentElement.remove()
+      }
+    })
   
   }
 
