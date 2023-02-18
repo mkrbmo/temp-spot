@@ -2,7 +2,7 @@ import random, string, requests, time, base64, json
 from flask import redirect, session
 from flask import current_app as app
 
-from . import logic
+
 
 
 """
@@ -57,6 +57,15 @@ def generate_key(length):
     return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
 
+def initialize_session():
+    session['url'] = {}
+    session['tracks'] = {}
+    session['tracks']['seeds'] = []
+    session['tracks']['hold'] = []
+    session['tracks']['hold'] = []
+    session['url']['popularity'] = 40
+    session['url']['length'] = 20
+
 
 """
 INPUT: SEED ARTIST ID + SEED TRACK IDS AND POPULARITY FROM SESSION
@@ -66,10 +75,24 @@ def generate_url(id):
     #limit = int(session['features']['length']) + 10
 
     url = f"https://api.spotify.com/v1/recommendations?limit=30&market=US&max-popularity={session['url']['popularity']}&seed_artists={id}"
-    if session['tracks'].get('seed_tracks'):
-        seeds = "%2C".join(session['tracks']['seed_tracks'])
+    
+    seeds = session['tracks']['seeds']
+
+    if len(seeds) == 0:
+        return url
+    
+
+    elif len(seeds) == 1:
+        url += '&seed_tracks='
+        url += seeds[0]
+
+    else:
+        url += '&seed_tracks='
+        seeds = "%2C".join(seeds)
         url += seeds
+    
     return url
+    
 
 
 """
@@ -86,7 +109,7 @@ def search_artist(input):
             'Accept': 'application/json'
         }
     response = requests.get(url, headers=headers)
-    print(response)
+    
     return response.json()
 
 def scrub_artist(response_object):
@@ -108,6 +131,7 @@ def clean_track(track):
     output['preview_url'] = track['preview_url']
     output['uri'] = track['uri']
     output['track_url'] = track['external_urls']['spotify']
+    output['id'] = track['id']
 
     return output
 
@@ -117,6 +141,7 @@ OUTPUT: DICTIONARY OF TRACKS WITH FORMAT "URL: TRACK DICT"
 """
 def get_tracks():
     url = generate_url(session['url']['artist_id'])
+    print(url)
     session['url']['previous'] = url
     
 
@@ -171,7 +196,7 @@ def create_playlist(user_id, name, description, public):
     
 
 def populate_playlist(playlist_id):
-    print(session['current_tracks'].keys())
+    
     url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
     headers = {
             'Authorization': 'Bearer ' + session['access_token'],
@@ -179,9 +204,9 @@ def populate_playlist(playlist_id):
             'Accept': 'application/json'
         }
     body = {
-        "uris": list(session['current_tracks'].keys())
+        "uris": list(session['tracks']['current'].keys())
     }
-    print(session['current_tracks'].keys())
+    
     response = requests.post(url, headers=headers, data=json.dumps(body))
 
     return response

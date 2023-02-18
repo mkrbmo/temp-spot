@@ -1,9 +1,6 @@
 function addTrack (track) {
   
-  let album = track.album
-  let cover_url = track.cover_url
-  let artists = track.artists
-  let title = track.title
+
 
   let div = document.createElement('div')
   div.className = 'track-card'
@@ -11,17 +8,17 @@ function addTrack (track) {
   div.dataset.url = track.track_url
   
   let base = 
-    `<img class="track-image" src="${cover_url}" alt="">
+    `<img class="track-image" src="${track.cover_url}" alt="album cover" data-preview="${track.preview_url}">
       
       
           <div class="track-info">
-              <div class="track-title">${title}</div>
-              <div class="track-artists">${artists}</div>
+              <div class="track-title" data-url="${track.track_url}">${track.title}</div>
+              <div class="track-artists">${track.artists}</div>
           </div>
-          <div class="track-album">${album}</div>
+          <div class="track-album">${track.album}</div>
       <div class="track-controls">
           <a href="#" class="track-delete">x</a>
-          <a href="#" class="track-share">+</a>
+          <a href="#" class="track-mixin" data-id="${track.id}">+</a>
           
       </div>`
 
@@ -33,7 +30,6 @@ function addTrack (track) {
 
 let audio, current
  
-
 document.addEventListener('click', event => {
   if (event.target.matches('#options-button')) {
     document.getElementById('modal-background').style.display = 'block';
@@ -51,7 +47,6 @@ document.addEventListener('click', event => {
     document.getElementById('modal-background').style.display = 'block';
     document.getElementById('playlist-modal').style.display = 'block';
   }
-
 
   if (event.target.matches('.track-delete')) {
     uri = event.target.parentElement.parentElement.dataset.uri
@@ -72,19 +67,9 @@ document.addEventListener('click', event => {
     })
   }
 
-
-
-
-
   if (event.target.matches('#options-send')) {
     let popularity = document.getElementById('track-popularity').value
-    let instrumentalness = document.getElementById('track-instrumentalness').value
     let length = document.getElementById('playlist-length').value
-    let prompt = document.getElementById('input-sentence').value
-    
-    let formData = new FormData();
-    formData.append('input-sentence', prompt);
-    formData.append("test", "test value")
     
     fetch(`/update_options`,
      {
@@ -95,9 +80,7 @@ document.addEventListener('click', event => {
         method: "POST",
         body : JSON.stringify( {
           'popularity': popularity,
-          'instrumentalness' : instrumentalness,
-          'length': length,
-          'prompt': prompt
+          'length': length
         })
       }).then(response => response.json())
         .then(newTracks => {
@@ -115,18 +98,33 @@ document.addEventListener('click', event => {
       
   
   }
-  
+
   if (event.target.matches('#playlist-send')){
     let playlistName = document.getElementById('playlist-name').value
     let description = document.getElementById('playlist-description').value
     let public = document.querySelector('input[name="public"]:checked').value;
     
-    fetch(`/send_playlist/${playlistName}/${public}/${description}`)
-      .then(response => console.log(response))
+    fetch('/send_playlist',
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body : JSON.stringify( {
+          'name': playlistName,
+          'description': description,
+          'public': public
+        })
+      }).then(response => {
+          console.log(response)
+        })
+    
+      
+    }
 
-  }
-  if (event.target.matches('.track-link')) {
-    let trackUrl = event.target.parentElement.parentElement.dataset.url
+  if (event.target.matches('.track-title')) {
+    let trackUrl = event.target.dataset.url
     window.open(trackUrl, '_blank');
   }
 
@@ -139,7 +137,7 @@ document.addEventListener('click', event => {
     if (event.target != current){
       
       current = event.target 
-      let audioUrl = event.target.parentElement.dataset.preview
+      let audioUrl = event.target.dataset.preview
       if (audioUrl == "None") {
         return
       }
@@ -152,8 +150,31 @@ document.addEventListener('click', event => {
       audio.play()
     }
   }
-      
 });
 
+document.addEventListener('click', event => {
+  console.log(1)
+  if (event.target.matches('.track-mixin')){
+    console.log(2)
+    let id = event.target.dataset.id
+    let uri = event.target.parentElement.parentElement.dataset.uri
+    
+    
+
+    fetch(`/mixin_track/${id}/${uri}`)
+    .then(response => response.json())
+    .then(newTracks => {
+      let cards = document.querySelectorAll('.track-card')
+      cards.forEach((card) => {
+          card.remove()
+      })
+      for (let newTrack in newTracks) {
+        addTrack(newTracks[newTrack])
+      }
+    })
+  }
+    
 
 
+
+})

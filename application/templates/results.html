@@ -28,20 +28,20 @@
     </div>
 
     {% for uri, track in session['tracks']['current'].items() %}
-    <div class="track-card" data-uri="{{ uri }}" data-url="{{ track['track_url'] }}" data-preview="{{ track['preview_url']}}">
+    <div class="track-card" data-uri="{{ uri }}">
         
         
-        <img class="track-image" src="{{ track['cover_url'] }}" alt="">
+        <img class="track-image" src="{{ track['cover_url'] }}" alt="album cover" data-preview="{{ track['preview_url']}}">
         
         
             <div class="track-info">
-                <div class="track-title">{{ track['title'] }}</div>
+                <div class="track-title" data-url="{{ track['track_url'] }}">{{ track['title'] }}</div>
                 <div class="track-artists">{{ track['artists'] }}</div>
             </div>
             <div class="track-album">{{ track['album'] }}</div>
         <div class="track-controls">
             <a href="#" class="track-delete">x</a>
-            <a href="#" class="track-link">+</a>
+            <a href="#" class="track-mixin" data-id="{{ track['id']}}">+</a>
             
         </div>
     </div>
@@ -66,12 +66,6 @@
             <output></output>
         </div>
 
-        <div class="modal-item">
-            <label for="track-track-instrumentalness">instrumentalness - </label>
-            <input type="range" name="track-instrumentalness" id="track-instrumentalness"
-                    min="0.0" max="1.0" step="0.1" oninput="this.nextElementSibling.value = this.value">
-            <output></output>
-        </div>
             
         <div class="modal-item">
             <label for="playlist-length">length - </label>

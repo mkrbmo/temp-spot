@@ -306,7 +306,7 @@ html, body {
    border: 2px solid black;
 }
 .modal-card {
-    display: flex;
+    display: None;
     flex-direction: column;
 }
 .modal-item {
@@ -316,9 +316,7 @@ html, body {
     flex-grow: 1;
     padding-bottom: 20px;
 }
-#playlist-modal {
-    display: none;
-}
+
 
 
 
