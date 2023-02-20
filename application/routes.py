@@ -11,7 +11,7 @@ from application.functions import (
     get_tracks, get_user, 
     create_playlist, 
     populate_playlist,
-    scrub_artist,
+    
     search_artist,
     initialize_session,
 
@@ -31,6 +31,23 @@ def home():
 def test():
     return render_template('test.html')
 
+
+@bp.route('/suggest/',  methods=('GET', 'POST'))
+def suggest():
+    artist = request.args.get('q')
+
+    if check_token(session) != None:
+            return redirect(url_for('authorize.authorize'))
+        
+    suggestions = search_artist(artist)
+
+    if suggestions == None:
+        return ('', 204)
+
+    return suggestions
+
+
+
 """ 
 INPUT: user supplied string from form
 TRANSFORMATION: string - emotion - audio features - song reccomendation list
@@ -38,20 +55,17 @@ RETURNS: list of reccomended song
 """
 @bp.route('/analysis', methods=('GET', 'POST'))
 def analysis():
-
+    if check_token(session) != None:
+            return redirect(url_for('authorize.authorize'))
+        
     if request.method == 'POST':
         
         if not session.get('url'):
             initialize_session()
         
-        if check_token(session) != None:
-            return redirect(url_for('authorize.authorize'))
-        
-        seed_artist = request.form['input-artist']
+        seed_artist = request.form['search-artist']
 
-        
-
-        three = scrub_artist(search_artist(seed_artist))
+        three = search_artist(seed_artist)
         artist_id = three[0][1]
         session['url']['artist_id'] = artist_id
         session['url']['artist_name'] = three[0][0]

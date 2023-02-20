@@ -1,7 +1,4 @@
 function addTrack (track) {
-  
-
-
   let div = document.createElement('div')
   div.className = 'track-card'
   div.dataset.uri = track.uri
@@ -28,8 +25,32 @@ function addTrack (track) {
   send.insertAdjacentElement('beforebegin', div)
 };
 
-let audio, current
- 
+
+function suggest(artist) {
+  if (artist == '' || artist.trim() == '') {
+    return
+  }
+  fetch(`/suggest/?q=${artist}`)
+  .then(function (response) {
+      return response.json()
+  })
+  .then(suggestions => {
+    
+    let suggestion_cards = document.getElementsByClassName('suggestion')
+    for (let i = 0; i<3; i++) {
+      suggestion_cards[i].value = suggestions[i][0]
+      suggestion_cards[i].innerHTML = suggestions[i][0]
+    }
+  })
+}
+document.addEventListener('click', event => {
+  let audio = document.getElementById('audio-preview')
+  
+    audio.pause()
+  
+})
+
+
 document.addEventListener('click', event => {
   if (event.target.matches('#options-button')) {
     document.getElementById('modal-background').style.display = 'block';
@@ -58,7 +79,6 @@ document.addEventListener('click', event => {
     })
   
   }
-
   if (event.target.matches('#track-add')) {
     fetch('/add_track')
     .then(response => response.json())
@@ -127,21 +147,20 @@ document.addEventListener('click', event => {
     let trackUrl = event.target.dataset.url
     window.open(trackUrl, '_blank');
   }
-
-  if (audio != undefined && !audio.paused && event.target != current) {
+/*
+  if (audio.dataset.current != '' && !audio.paused && event.target != current) {
     audio.pause()
   }
-
+*/
+  
   if (event.target.matches('.track-image')) {
+    let audio = document.getElementById('audio-preview')
     
-    if (event.target != current){
-      
-      current = event.target 
-      let audioUrl = event.target.dataset.preview
-      if (audioUrl == "None") {
+    if (event.target.dataset.preview != audio.src){
+      audio.src = event.target.dataset.preview
+      if (audio.src == "None") {
         return
       }
-      audio = new Audio(audioUrl)
       audio.play()
 
     } else if (!audio.paused) {
@@ -153,9 +172,8 @@ document.addEventListener('click', event => {
 });
 
 document.addEventListener('click', event => {
-  console.log(1)
   if (event.target.matches('.track-mixin')){
-    console.log(2)
+    
     let id = event.target.dataset.id
     let uri = event.target.parentElement.parentElement.dataset.uri
     
@@ -173,8 +191,15 @@ document.addEventListener('click', event => {
       }
     })
   }
-    
+})
 
 
-
+document.addEventListener('keyup', event => {
+  if (!event.target.matches('#search-artist')) {
+    return
+  }
+  const ignore = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter']
+  if (!ignore.includes(event.code)) {
+    suggest(event.target.value)
+  }
 })

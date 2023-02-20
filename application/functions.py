@@ -80,12 +80,9 @@ def generate_url(id):
 
     if len(seeds) == 0:
         return url
-    
-
     elif len(seeds) == 1:
         url += '&seed_tracks='
         url += seeds[0]
-
     else:
         url += '&seed_tracks='
         seeds = "%2C".join(seeds)
@@ -109,12 +106,17 @@ def search_artist(input):
             'Accept': 'application/json'
         }
     response = requests.get(url, headers=headers)
-    
-    return response.json()
+    response_json = response.json()
+    if response.status_code not in range(200,299):
+        print(response.status_code, response.content)
+        return None
 
-def scrub_artist(response_object):
-    top_three = [(artist['name'], artist['id']) for artist in response_object['artists']['items']]
+    
+    top_three = [(artist['name'], artist['id']) for artist in response_json['artists']['items']]
+    
     return top_three
+
+
 
 
 

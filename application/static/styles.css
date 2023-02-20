@@ -169,14 +169,14 @@ html, body {
     padding: 10px;
     background-color: white;
 }
-.input_sentence {
+#search-artist {
     border: none;
     background-color: rgb(231, 231, 231);
     font-size: 12px;
     font-family: inherit;
     flex-grow: 1;
 }
-.input_sentence:focus{
+#search-artist:focus{
     
     outline: 1px black solid;
     outline-offset: 0;
@@ -316,7 +316,9 @@ html, body {
     flex-grow: 1;
     padding-bottom: 20px;
 }
-
+.suggestion:hover{
+    background-color: gray;
+}
 
 
 
