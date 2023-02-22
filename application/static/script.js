@@ -15,7 +15,7 @@ function addTrack (track) {
           <div class="track-album">${track.album}</div>
       <div class="track-controls">
           <a href="#" class="track-delete">x</a>
-          <a href="#" class="track-mixin" data-id="${track.id}">+</a>
+          <a href="#" class="track-options" data-id="${track.id}">+</a>
           
       </div>`
 
@@ -42,13 +42,69 @@ function suggest(artist) {
       suggestion_cards[i].innerHTML = suggestions[i][0]
     }
   })
-}
+};
+
+
+function initializeAudio(target) {
+  let url = target.dataset.preview
+  if (url == 'None') {
+    return
+  }
+  let audio = document.createElement('audio')
+  audio.id = 'audio-preview'
+  audio.src = url
+  target.insertAdjacentElement('afterend', audio)
+  audio.play()
+};
+
+
 document.addEventListener('click', event => {
   let audio = document.getElementById('audio-preview')
-  
-    audio.pause()
-  
-})
+  if (audio && !event.target.matches('.track-image')) audio.remove()
+
+
+  if (event.target.matches('.track-delete')) {
+    uri = event.target.parentElement.parentElement.dataset.uri
+    fetch(`/delete_track/${uri}`)
+    .then(response => {
+      if (response.statusText == "OK") {
+        event.target.parentElement.parentElement.remove()
+      }
+    })
+  }
+
+  else if (event.target.matches('.track-image')) {
+    let audio = document.getElementById('audio-preview')
+    if (!audio) {
+      initializeAudio(event.target)
+    } else if (audio && audio.src == event.target.dataset.preview) {
+      if (audio.paused) audio.play();
+      else if (!audio.paused) audio.pause()
+    } else if (audio && audio.src != event.target.dataset.preview) {
+      audio.remove()
+      initializeAudio(event.target)
+    }
+  }
+
+  else if (event.target.matches('.track-options')){
+    
+    let id = event.target.dataset.id
+    let uri = event.target.parentElement.parentElement.dataset.uri
+    
+    fetch(`/mixin_track/${id}/${uri}`)
+    .then(response => response.json())
+    .then(newTracks => {
+      let cards = document.querySelectorAll('.track-card')
+      cards.forEach((card) => {
+          card.remove()
+      })
+      for (let newTrack in newTracks) {
+        addTrack(newTracks[newTrack])
+      }
+    })
+  }
+
+});
 
 
 document.addEventListener('click', event => {
@@ -63,29 +119,19 @@ document.addEventListener('click', event => {
   };
   if (event.target.matches('.modal-submit')) {
     document.getElementById('modal-background').style.display = 'none';
-  }
+  };
   if (event.target.matches('#send_card')) {
     document.getElementById('modal-background').style.display = 'block';
     document.getElementById('playlist-modal').style.display = 'block';
-  }
+  };
 
-  if (event.target.matches('.track-delete')) {
-    uri = event.target.parentElement.parentElement.dataset.uri
-    fetch(`/delete_track/${uri}`)
-    .then(response => {
-      if (response.statusText == "OK") {
-        event.target.parentElement.parentElement.remove()
-      }
-    })
-  
-  }
   if (event.target.matches('#track-add')) {
     fetch('/add_track')
     .then(response => response.json())
     .then(track => {
       addTrack(track)
     })
-  }
+  };
 
   if (event.target.matches('#options-send')) {
     let popularity = document.getElementById('track-popularity').value
@@ -117,7 +163,7 @@ document.addEventListener('click', event => {
         
       
   
-  }
+  };
 
   if (event.target.matches('#playlist-send')){
     let playlistName = document.getElementById('playlist-name').value
@@ -141,65 +187,31 @@ document.addEventListener('click', event => {
         })
     
       
-    }
-
+  };
+/*
   if (event.target.matches('.track-title')) {
     let trackUrl = event.target.dataset.url
     window.open(trackUrl, '_blank');
   }
-/*
-  if (audio.dataset.current != '' && !audio.paused && event.target != current) {
-    audio.pause()
-  }
 */
   
-  if (event.target.matches('.track-image')) {
-    let audio = document.getElementById('audio-preview')
-    
-    if (event.target.dataset.preview != audio.src){
-      audio.src = event.target.dataset.preview
-      if (audio.src == "None") {
-        return
-      }
-      audio.play()
+});
+//MIX IN TRACK TO RECCOMENDATION
+document.addEventListener('click', event => {
 
-    } else if (!audio.paused) {
-      audio.pause()
-    } else if (audio.paused) {
-      audio.play()
-    }
-  }
 });
 
-document.addEventListener('click', event => {
-  if (event.target.matches('.track-mixin')){
-    
-    let id = event.target.dataset.id
-    let uri = event.target.parentElement.parentElement.dataset.uri
-    
-    
-
-    fetch(`/mixin_track/${id}/${uri}`)
-    .then(response => response.json())
-    .then(newTracks => {
-      let cards = document.querySelectorAll('.track-card')
-      cards.forEach((card) => {
-          card.remove()
-      })
-      for (let newTrack in newTracks) {
-        addTrack(newTracks[newTrack])
+window.onload = function() {
+  let searchBox = document.getElementById('search-artist')
+  if (searchBox) {
+    searchBox.addEventListener('keyup', event => {
+      const ignore = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter']
+      if (!ignore.includes(event.code)) {
+        suggest(event.target.value)
       }
-    })
+    });
   }
-})
+}
 
 
-document.addEventListener('keyup', event => {
-  if (!event.target.matches('#search-artist')) {
-    return
-  }
-  const ignore = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter']
-  if (!ignore.includes(event.code)) {
-    suggest(event.target.value)
-  }
-})
+//EVENT LISTENER FOR AUDIO PREVIEW

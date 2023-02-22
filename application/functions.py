@@ -103,7 +103,8 @@ def search_artist(input):
     headers = {
             'Authorization': 'Bearer ' + session['access_token'],
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            'SameSite': 'None'
         }
     response = requests.get(url, headers=headers)
     response_json = response.json()

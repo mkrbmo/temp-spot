@@ -37,15 +37,12 @@
         <input type="button" id="track-add" value="add track">
     </div>
 
-    <div id="audio-container">
-        <audio id="audio-preview" src="""></audio>
-    </div>
+    
 
     {% for uri, track in session['tracks']['current'].items() %}
     <div class="track-card" data-uri="{{ uri }}">
         
         <img class="track-image" src="{{ track['cover_url'] }}" alt="album cover" data-preview="{{ track['preview_url']}}">
-        
         
             <div class="track-info">
                 <div class="track-title" data-url="{{ track['track_url'] }}">{{ track['title'] }}</div>
@@ -54,7 +51,7 @@
             <div class="track-album">{{ track['album'] }}</div>
         <div class="track-controls">
             <a href="#" class="track-delete">x</a>
-            <a href="#" class="track-mixin" data-id="{{ track['id']}}">+</a>
+            <a href="#" class="track-options" data-id="{{ track['id']}}">+</a>
             
         </div>
     </div>
