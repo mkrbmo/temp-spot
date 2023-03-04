@@ -1,0 +1,314 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" href="#">
+    <script type="text/javascript" src="script.js"></script>
+    
+</head>
+
+<body>
+<div id="container">
+    <div class="background-tile"></div>
+        
+        <nav id="menu" >
+            
+            <a class="nav-item" href="/">moodring</a>
+            <a class="nav-item" href="/analysis">analyze</a>
+            
+            
+            <div class="toggle-switch">
+                <label class="switch-label">
+                    <input type="checkbox" class="switch-checkbox" id="light-mode">
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+            <a class="nav-item" href="#">...</a>
+            
+        </nav>
+                
+ 
+    <div class="" id="form-card">
+        <button id="form-options-button" href="#">|||</button>
+        <form id="form-content" method="POST" name="analysis_form">
+            
+            <label for="search-artist"></label>
+            <input type="text" list="suggestions" name="search-artist" id="artist-input" class="text-input" autocomplete="off" required>
+            
+            <div class="suggestions-container">
+                <datalist id="suggestions">
+                    <option class="suggestion" value=""></option>
+                    <option class="suggestion" value=""></option>
+                    <option class="suggestion" value=""></option>
+                </datalist>
+            </div>
+
+            <input class="form-submit-button" type="submit" value="analyze">
+        </form>
+
+        
+    </div>
+    
+
+
+
+    <main id="main-content">
+        
+        <div id="legend">
+            <div id="legend-track">track</div>
+            <div id="legend-album">album</div>
+            <input type="button" id="track-add-button" value="add track">
+        </div>
+
+        
+
+        
+        
+            <div class="track-card" data-uri="spotify:track:4HThGaX5sLxaa6RFuEsubw">
+            
+                
+                    <div class="track-image-container"><img class="track-image" src="https://i.scdn.co/image/ab67616d000048515482183445e0435f9e116ce0" alt="album cover" data-preview="https://p.scdn.co/mp3-preview/afc9160cc89053ffe48021008c6ed9cffc2cb5a6?cid=60e8f2f1ff2e46ea88a8b34c45b3183e"></div>
+            
+                        <div class="track-info">
+                            <h2 class="track-title" data-url="https://open.spotify.com/track/4HThGaX5sLxaa6RFuEsubw">All Eyes</h2>
+                            <div class="track-artists">Crooked Colours</div>
+                        </div>
+                        <div class="track-album">Vera</div>
+                    <div class="track-controls">
+                        <a href="#" class="track-delete">x</a>
+                        <a href="#" class="track-flip">+</a>
+                    </div>
+                
+                <div class="card-back">
+                    <button class="track-flip">X</button>
+                    <button data-id="4HThGaX5sLxaa6RFuEsubw">add to recommendation mix</button>
+                    <a href="https://open.spotify.com/track/4HThGaX5sLxaa6RFuEsubw">go to spotify</a>
+            
+                </div>
+            
+            </div>
+        
+
+      
+        
+        
+       
+            <div class="track-card" data-uri="spotify:track:6ADKtjBCUtkZbhZdZpnAJr">
+            
+                
+                    <img class="track-image" src="https://i.scdn.co/image/ab67616d00004851fb90c0d066715d8c1c2b2c7b" alt="album cover" data-preview="https://p.scdn.co/mp3-preview/684799ee43a661d41a0bca37113a7a5266c5451c?cid=60e8f2f1ff2e46ea88a8b34c45b3183e">
+            
+                        <div class="track-info">
+                            <div class="track-title" data-url="https://open.spotify.com/track/6ADKtjBCUtkZbhZdZpnAJr">For The Love (Big Wild Remix)</div>
+                            <div class="track-artists">GRiZ, Big Wild, Talib Kweli</div>
+                        </div>
+                        <div class="track-album">For The Love (Remixes) - EP</div>
+                    <div class="track-controls">
+                        <a href="#" class="track-delete">x</a>
+                        <a href="#" class="track-flip">+</a>
+                    </div>
+                
+                <div class="card-back">
+                    <button class="track-flip">X</button>
+                    <button data-id="6ADKtjBCUtkZbhZdZpnAJr">add to recommendation mix</button>
+                    <a href="https://open.spotify.com/track/6ADKtjBCUtkZbhZdZpnAJr">go to spotify</a>
+                </div>
+            
+            </div>
+        
+        
+        
+        <div class="track-card" data-uri="spotify:track:0PB8KUQHpc7GveSOaWhGwb">
+            
+            
+                <img class="track-image" src="https://i.scdn.co/image/ab67616d00004851de2fdfef843577dc40cee8be" alt="album cover" data-preview="https://p.scdn.co/mp3-preview/27d45f081486cba6a6dabf710ffb6528363debfb?cid=60e8f2f1ff2e46ea88a8b34c45b3183e">
+                
+                    <div class="track-info">
+                        <div class="track-title" data-url="https://open.spotify.com/track/0PB8KUQHpc7GveSOaWhGwb">No Diggity</div>
+                        <div class="track-artists">Chet Faker</div>
+                    </div>
+                    <div class="track-album">Thinking In Textures</div>
+                <div class="track-controls">
+                    <a href="#" class="track-delete">x</a>
+                    <a href="#" class="track-options">+</a>
+                </div>
+            
+
+            <div class="card-back">
+                <button data-id="0PB8KUQHpc7GveSOaWhGwb">add to recommendation mix</button>
+                <a href="https://open.spotify.com/track/0PB8KUQHpc7GveSOaWhGwb">go to spotify</a>
+            </div>
+        
+        </div>
+        
+        
+        <div class="track-card" data-uri="spotify:track:5QZdeEHEHy1Jphbral0nbv">
+            
+            
+                <img class="track-image" src="https://i.scdn.co/image/ab67616d00004851c4f3b961842348b2a95fca3a" alt="album cover" data-preview="https://p.scdn.co/mp3-preview/4e9e4e1fb1ad2ef804fe96927c646a044f643c25?cid=60e8f2f1ff2e46ea88a8b34c45b3183e">
+                
+                    <div class="track-info">
+                        <div class="track-title" data-url="https://open.spotify.com/track/5QZdeEHEHy1Jphbral0nbv">Survive</div>
+                        <div class="track-artists">Lane 8, Channy Leaneagh</div>
+                    </div>
+                    <div class="track-album">Reviver</div>
+                <div class="track-controls">
+                    <a href="#" class="track-delete">x</a>
+                    <a href="#" class="track-options">+</a>
+                </div>
+            
+
+            <div class="card-back">
+                <button data-id="5QZdeEHEHy1Jphbral0nbv">add to recommendation mix</button>
+                <a href="https://open.spotify.com/track/5QZdeEHEHy1Jphbral0nbv">go to spotify</a>
+            </div>
+        
+        </div>
+        
+        
+        <div class="track-card" data-uri="spotify:track:1ffg4c773V05Nrbk6CFVjB">
+            
+            
+                <img class="track-image" src="https://i.scdn.co/image/ab67616d0000485123c6b856bd4a079c8e54ba18" alt="album cover" data-preview="https://p.scdn.co/mp3-preview/9440bb1298ef01b2a47c06c5b2c269bf190a32db?cid=60e8f2f1ff2e46ea88a8b34c45b3183e">
+                
+                    <div class="track-info">
+                        <div class="track-title" data-url="https://open.spotify.com/track/1ffg4c773V05Nrbk6CFVjB">Quit This City (feat. Lowell)</div>
+                        <div class="track-artists">Grandtheft, Lowell</div>
+                    </div>
+                    <div class="track-album">Quit This City</div>
+                <div class="track-controls">
+                    <a href="#" class="track-delete">x</a>
+                    <a href="#" class="track-options">+</a>
+                </div>
+            
+
+            <div class="card-back">
+                <button data-id="1ffg4c773V05Nrbk6CFVjB">add to recommendation mix</button>
+                <a href="https://open.spotify.com/track/1ffg4c773V05Nrbk6CFVjB">go to spotify</a>
+            </div>
+        
+        </div>
+        
+        
+        <div class="track-card" data-uri="spotify:track:5ifs3FASIGpf5DG3zPYI4D">
+            
+            
+                <img class="track-image" src="https://i.scdn.co/image/ab67616d0000485100a0e30e0699a4b3132827bf" alt="album cover" data-preview="https://p.scdn.co/mp3-preview/d7fdb694b603b8f24b17e8aa8c0e012b12dfff12?cid=60e8f2f1ff2e46ea88a8b34c45b3183e">
+                
+                    <div class="track-info">
+                        <div class="track-title" data-url="https://open.spotify.com/track/5ifs3FASIGpf5DG3zPYI4D">Playing For You - The Blaze Remix</div>
+                        <div class="track-artists">Joe Hertz</div>
+                    </div>
+                    <div class="track-album">Playing For You (The Blaze Remix)</div>
+                <div class="track-controls">
+                    <a href="#" class="track-delete">x</a>
+                    <a href="#" class="track-options">+</a>
+                </div>
+            
+
+            <div class="card-back">
+                <button data-id="5ifs3FASIGpf5DG3zPYI4D">add to recommendation mix</button>
+                <a href="https://open.spotify.com/track/5ifs3FASIGpf5DG3zPYI4D">go to spotify</a>
+            </div>
+        
+        </div>
+        
+    
+        
+        <div id="send-card" class="track-card">
+            <a id="send-button" class="track-option" href="#">send playlist to spotify</a>
+        </div>
+
+    </main>
+
+</div>
+
+    <div id="modal-background">
+        <div id="modal-container">
+            <div id="modal-banner">
+                <div id="modal-title">save playlist</div>
+                <input type="button" id="modal-cancel" value="cancel">
+            </div>
+            <div id="options-modal" class="modal-card">
+
+                <div class="modal-item">
+                    <label for="track-track-popularity">popularity - </label>
+                    <div class="visible-range">
+                        <input type="range" class="invisible-range" name="track-popularity" id="track-popularity" min="1" max="100" step="1" oninput="this.parentElement.nextElementSibling.innerHTML = this.value; this.parentElement.style['background-size'] = this.value-1 + '%'"">
+                    </div>
+                    <span class="range-indicator">0</span>
+                </div>
+
+
+                    
+                <div class="modal-item">
+                    <label for="playlist-length">length - </label>
+
+                    <div class="visible-range">
+                        <input type="range" class="invisible-range" name="playlist-length" id="playlist-length" min="10" max="30" oninput="this.parentElement.nextElementSibling.innerHTML = this.value; this.parentElement.style['background-size'] = (this.value*5-50) + '%'"">
+                    </div>
+                    <span class="range-indicator">0</span>
+                </div>
+                
+                
+
+
+                <div class="modal-item">
+                    <input type="button" id="options-send" class="modal-button" value="go">
+                </div>
+            </div>
+
+            <div id="playlist-modal" class="modal-card">
+                
+            
+                <div class="modal-item">
+                    <label for="playlist-name">name</label>
+                    <input type="text" class="text-input" name="playlist-name" id="playlist-name">
+                </div>
+
+                <div class="modal-item">
+                    <label for="playlist-description">description</label>
+                    <input type="text" class="text-input" name="playlist-description" id="playlist-description">
+                </div>
+
+                <div class="modal-item">
+                    <label for="public">visibility</label>
+
+                    <div id="radio-container">
+                        <input type="radio" name="visibility" value="public" id="public" checked="" class="visibility-radio">
+                        <label for="public">public</label>
+                        <input type="radio" name="visibility" id="private" value="private" class="visibility-radio">
+                        <label for="private">private</label>
+                    </div>
+                
+                </div>
+
+                <div class="modal-item">
+                    <input type="button" id="playlist-send" class="modal-button" value="go">
+                </div>
+
+            </div>
+
+            <div id="track-modal" class="modal-card">
+                
+                <div class="modal-item">
+                    <input type="button" id="mix-song-button" class="track-option" value="mix song into recommendation">
+                </div>
+
+                <div class="modal-item">
+                    <a id="spotify-link" class="track-option" href="#"> go to song on spotify</a>
+                </div>
+
+                
+            
+            </div>
+
+        
+        </div>
+    </div>
+
+
+
+</body></html>

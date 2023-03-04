@@ -1,127 +1,143 @@
 {% extends 'base.html' %} 
 
-{% block script %} 
-<script type="text/javascript">
-    //importVariables( {{ session['queued_tracks']|tojson }} );-->
-    
-    
-    
-    
-</script>
-{% endblock %}
 
 
 {% block content %} 
-<div id="options" class="">
+
             
-    <div class="" id="form-card">
+    <div id="form-card">
+        <button id="form-options-button" class="banner-button" href="#">options</button>
         <form id="form-content" method="POST" name="analysis_form" id="analysis_form">
-            <input type="text" id="input-sentence" name="input-sentence" class="input-sentence" value="{{ sentence }}" required>
             
-            <input id="analyze-button" type="submit" value="analyze">
-            <a id="options-button" href="#">|||</a>
+            <label for="search-artist"></label>
+            <input type="text" list="suggestions" name="search-artist" id="search-input" class="text-input" autocomplete="off" value="{{ session['url']['artist_name'] }}" onClick="this.select();" required>
+            
+            <div id="suggestions-container">
+                <datalist id="suggestions">
+                </datalist>
+            </div>
+
+            <input class="form-button" type="submit" value="analyze">
             
         </form>
-    </div>
-    
-</div>
-
-
-
-<div id="content" class="content">
-    
-    <div id="legend-card" class="legend-card">
-        <div>Track</div>
-        <div>Album</div>
-        <input type="button" id="track-add" value="add track">
-    </div>
-
-    {% for uri, track in session['current_tracks'].items() %}
-    <div class="track-card" data-uri="{{ uri }}" data-url="{{ track['track_url'] }}" data-preview="{{ track['preview_url']}}">
-        
-        
-        <img class="track-image" src="{{ track['cover_url'] }}" alt="">
-        
-        
-            <div class="track-info">
-                <div class="track-title">{{ track['title'] }}</div>
-                <div class="track-artists">{{ track['artists'] }}</div>
-            </div>
-            <div class="track-album">{{ track['album'] }}</div>
-        <div class="track-controls">
-            <a href="#" class="track-delete">x</a>
-            <a href="#" class="track-link">+</a>
             
+    </div>
+    
+
+
+
+
+<main id="main-content">
+    
+    <div id="legend">
+        <div id="legend-track">track</div>
+        <div id="legend-album">album</div>
+        <input type="button" class="banner-button" id="track-add-button" value="add track">
+    </div>
+
+    
+
+    {% for uri, track in session['tracks']['current'].items() %}
+    <div class="track-card" data-uri="{{ uri }}">
+        
+        <div class="track-image-container">
+            <img class="track-image" src="{{ track['cover_url'] }}" alt="album cover" data-preview="{{ track['preview_url']}}" width="64" height="64">
+            <div class="preview-error">preview not available</div>
         </div>
+
+        <div class="track-info">
+            <div class="track-title">{{ track['title'] }}</div>
+            <div class="track-artists">{{ track['artists'] }}</div>
+        </div>
+        <div class="track-album">{{ track['album'] }}</div>
+        <div class="track-controls">
+            <button href="#" class="track-button track-delete">x</button>
+            <button href="#" class="track-button track-options" data-url="{{ track['track_url'] }}" data-uri="{{ track['uri'] }}" data-id="{{ track['id']}}">+</button>
+        </div>
+    
     </div>
     
     {% endfor %}
     
-    <div id="send" class="legend-card">
-        <a id="send_card" href="#">send playlist to spotify</a>
+    <div id="send-card">
+        <a id="send-button" class="form-button" href="#">send playlist to spotify</a>
     </div>
 
-</div>
+</main>
 {% endblock %}
 
 {% block modal %}
-    <div id="options-modal" class="modal-card">
-        <div id="modal-title" >options.</div>
+    <div id="modal-banner">
+        <div id="modal-title">save playlist</div>
+        <input type="button" class="banner-button" id="modal-cancel" value="cancel">
+    </div>
 
-        <div class="model-item">
-            <label for="track-track-popularity">popularity - </label>
-            <input type="range" name="track-popularity" id="track-popularity"
-                    min="1" max="100" step="1" oninput="this.nextElementSibling.value = this.value">
-            <output></output>
-        </div>
+    <div id="options-modal" class="modal-card">
 
         <div class="modal-item">
-            <label for="track-track-instrumentalness">instrumentalness - </label>
-            <input type="range" name="track-instrumentalness" id="track-instrumentalness"
-                    min="0.0" max="1.0" step="0.1" oninput="this.nextElementSibling.value = this.value">
-            <output></output>
+            <label for="track-track-popularity">popularity - </label>
+            <div class="visible-range" id="popularity-range">
+                <input type="range" class="invisible-range" name="track-popularity" id="track-popularity" min="1" max="100" step="1" value="{{ session['url']['popularity'] }}" oninput="this.parentElement.nextElementSibling.innerHTML = this.value; this.parentElement.style['background-size'] = this.value-1 + '%'">
+            </div>
+            <span class="range-indicator" id="popularity-indicator">0</span>
         </div>
+
+
             
         <div class="modal-item">
             <label for="playlist-length">length - </label>
-            <input type="range" name="playlist-length" id="playlist-length"
-                    min="10" max="30" oninput="this.nextElementSibling.value = this.value">
-            <output></output>
+
+            <div class="visible-range" id="length-range">
+                <input type="range" class="invisible-range" name="playlist-length" id="playlist-length" min="10" max="30" value="{{ session['url']['length']}}" oninput="this.parentElement.nextElementSibling.innerHTML = this.value; this.parentElement.style['background-size'] = (this.value*5-50) + '%'">
+            </div>
+            <span class="range-indicator" id="length-indicator">0</span>
         </div>
         
-        
-
-
         <div class="modal-item">
-            <input type="button" class="modal-cancel" value="cancel">
-            <input type="button" id="options-send" class="modal-submit" value="go">
+            <input type="button" id="options-submit" class="modal-submit form-button" value="go">
         </div>
     </div>
 
+
     <div id="playlist-modal" class="modal-card">
-        <div class="modal-title">send playlist to spotify</div>
-    
+                
         <div class="modal-item">
             <label for="playlist-name">name</label>
-            <input type="text" name="playlist-name" id="playlist-name">
+            <input type="text" class="text-input" name="playlist-name" id="playlist-name">
         </div>
 
         <div class="modal-item">
             <label for="playlist-description">description</label>
-            <input type="text" name="playlist-description" id="playlist-description">
+            <input type="text" class="text-input" name="playlist-description" id="playlist-description">
         </div>
 
         <div class="modal-item">
             <label for="public">visibility</label>
-            <input type="radio" name="public" value="public" checked>
-            <input type="radio" name="public" value="private">
+
+            <div id="radio-container">
+                <input type="radio" name="visibility" value="public" id="public" checked="" class="visibility-radio">
+                <label for="public">public</label>
+                <input type="radio" name="visibility" id="private" value="private" class="visibility-radio">
+                <label for="private">private</label>
+            </div>
+        
         </div>
 
         <div class="modal-item">
-            <input type="button" class="modal-cancel" value="cancel">
-            <input type="button" id="playlist-send" class="modal-submit" value="go">
+            <input type="button" id="playlist-send" class="modal-submit form-button" value="go">
         </div>
 
+    </div>
+
+    <div id="track-modal" class="modal-card">
+                
+        <div class="modal-item">
+            <input type="button" id="mix-song-button" class="form-button" value="mix song into recommendation">
+        </div>
+
+        <div class="modal-item">
+            <a id="spotify-link" class="form-button" href="#" target="_blank"> go to song on spotify</a>
+        </div>
     </div>
 
 {% endblock %}

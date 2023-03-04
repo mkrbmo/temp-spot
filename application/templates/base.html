@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="shortcut icon" href="#">
     <script type="text/javascript" src="{{url_for('static', filename='script.js') }}"></script>
     {% block script %}{% endblock %}
 </head>
@@ -14,17 +15,21 @@
     <div id="container" >
         <div class="background-tile"></div>
         
-            <header id="menu" >
+            <nav id="menu" >
                 
-                    <div class="nav-items">
-                        <a class="nav-item" href="{{ url_for('routes.home') }}">spot</a>
-                        <a class="nav-item" href="{{ url_for('routes.analysis') }}">analyze</a>
-                        <span class="nav-item" ></span>
-                        <a class="nav-item" href="#">...</a>
-                    </div>
-                
+                <a class="nav-item" href="{{ url_for('routes.home') }}">moodring</a>
+                <a class="nav-item" href="{{ url_for('routes.analysis') }}">analyze</a>
+                <a class="nav-item" href="#">blog</a>
+                <a class="nav-item" href="#">about</a>
+                        
+                 <div class="toggle-switch">
+                    <label class="switch-label">
+                        <input type="checkbox" class="switch-checkbox" id="light-mode">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
             
-            </header>
+            </nav>
             
             {% block content %} {% endblock %}
             
