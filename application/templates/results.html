@@ -6,21 +6,18 @@
 
             
     <div id="form-card">
-        <button id="form-options-button" href="#">|||</button>
+        <button id="form-options-button" class="banner-button" href="#">options</button>
         <form id="form-content" method="POST" name="analysis_form" id="analysis_form">
             
             <label for="search-artist"></label>
-            <input type="text" list="suggestions" name="search-artist" id="artist-input" class="text-input" autocomplete="off" required>
+            <input type="text" list="suggestions" name="search-artist" id="search-input" class="text-input" autocomplete="off" value="{{ session['url']['artist_name'] }}" onClick="this.select();" required>
             
-            <div class="suggestions-container">
+            <div id="suggestions-container">
                 <datalist id="suggestions">
-                    <option class="suggestion" value=""></option>
-                    <option class="suggestion" value=""></option>
-                    <option class="suggestion" value=""></option>
                 </datalist>
             </div>
 
-            <input class="form-submit-button" type="submit" value="analyze">
+            <input class="form-button" type="submit" value="analyze">
             
         </form>
             
@@ -35,7 +32,7 @@
     <div id="legend">
         <div id="legend-track">track</div>
         <div id="legend-album">album</div>
-        <input type="button" id="track-add-button" value="add track">
+        <input type="button" class="banner-button" id="track-add-button" value="add track">
     </div>
 
     
@@ -49,13 +46,13 @@
         </div>
 
         <div class="track-info">
-            <div class="track-title" data-url="{{ track['track_url'] }}">{{ track['title'] }}</div>
+            <div class="track-title">{{ track['title'] }}</div>
             <div class="track-artists">{{ track['artists'] }}</div>
         </div>
         <div class="track-album">{{ track['album'] }}</div>
         <div class="track-controls">
-            <a href="#" class="track-delete">x</a>
-            <a href="#" class="track-options">+</a>
+            <button href="#" class="track-button track-delete">x</button>
+            <button href="#" class="track-button track-options" data-url="{{ track['track_url'] }}" data-uri="{{ track['uri'] }}" data-id="{{ track['id']}}">+</button>
         </div>
     
     </div>
@@ -63,7 +60,7 @@
     {% endfor %}
     
     <div id="send-card">
-        <a id="send-button" class="track-option" href="#">send playlist to spotify</a>
+        <a id="send-button" class="form-button" href="#">send playlist to spotify</a>
     </div>
 
 </main>
@@ -72,7 +69,7 @@
 {% block modal %}
     <div id="modal-banner">
         <div id="modal-title">save playlist</div>
-        <input type="button" id="modal-cancel" value="cancel">
+        <input type="button" class="banner-button" id="modal-cancel" value="cancel">
     </div>
 
     <div id="options-modal" class="modal-card">
@@ -97,7 +94,7 @@
         </div>
         
         <div class="modal-item">
-            <input type="button" id="options-submit" class="modal-button" value="go">
+            <input type="button" id="options-submit" class="modal-submit form-button" value="go">
         </div>
     </div>
 
@@ -127,7 +124,7 @@
         </div>
 
         <div class="modal-item">
-            <input type="button" id="playlist-send" class="modal-button" value="go">
+            <input type="button" id="playlist-send" class="modal-submit form-button" value="go">
         </div>
 
     </div>
@@ -135,11 +132,11 @@
     <div id="track-modal" class="modal-card">
                 
         <div class="modal-item">
-            <input type="button" id="mix-song-button" class="track-option" value="mix song into recommendation">
+            <input type="button" id="mix-song-button" class="form-button" value="mix song into recommendation">
         </div>
 
         <div class="modal-item">
-            <a id="spotify-link" class="track-option" href="#"> go to song on spotify</a>
+            <a id="spotify-link" class="form-button" href="#" target="_blank"> go to song on spotify</a>
         </div>
     </div>
 

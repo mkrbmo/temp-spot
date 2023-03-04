@@ -183,6 +183,11 @@ def get_user():
 def create_playlist(user_id, name, description, public):
     url = f'https://api.spotify.com/v1/users/{user_id}/playlists'
     
+    if public == "public":
+        public = True
+    else:
+        public = False
+
     headers = {
             'Authorization': 'Bearer ' + session['access_token'],
             'Content-Type': 'application/json',
@@ -191,7 +196,7 @@ def create_playlist(user_id, name, description, public):
     body = {
         "name": f"{name}",
         "description": f"{description}",
-        "public": False
+        "public": f"{public}"
     }
     response = requests.post(url, headers=headers, data=json.dumps(body))
     

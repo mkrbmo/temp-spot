@@ -4,7 +4,7 @@
     <form id="form-content" method="POST" name="analysis_form" id="analysis_form">
                 
         <label for="search-artist"></label>
-        <input type="text" list="suggestions" name="search-artist" id="artist-input" class="text-input" autocomplete="off" required>
+        <input type="text" list="suggestions" name="search-artist" id="search-input" class="text-input" autocomplete="off" required>
         
         <div id="suggestions-container">
             <datalist id="suggestions">
@@ -14,7 +14,7 @@
             </datalist>
         </div>
 
-        <input class="form-submit-button" type="submit" value="analyze">
+        <input id="search-button" class="form-button" type="submit" value="analyze">
         
     </form>
 {% endblock %}
