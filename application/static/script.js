@@ -21,8 +21,8 @@ function addTrack (track) {
 
   div.innerHTML = base
 
-  let send = document.getElementById('send')
-  send.insertAdjacentElement('beforebegin', div)
+  let legend = document.getElementById('legend')
+  legend.insertAdjacentElement('afterend', div)
 };
 
 
@@ -44,9 +44,16 @@ function suggest(artist) {
   })
 };
 
+/*
+**  ------------
+**  AUDIO HANDLING
+**  -------------
+*/
 
 function initializeAudio(target) {
   let url = target.dataset.preview
+  target.parentElement.classList.add('playing')
+  target.parentElement.classList.add('record')
   if (url == 'None') {
     return
   }
@@ -57,13 +64,49 @@ function initializeAudio(target) {
   audio.play()
 };
 
-
+function resetAudio() {
+  audio.remove()
+  let containers = document.querySelectorAll('.track-image-container')
+    containers.forEach((container) => {
+        container.classList.remove('playing')
+        container.classList.remove('record')
+    })
+}
 document.addEventListener('click', event => {
+  let e = event.target
+  let p = event.target.parentElement
   let audio = document.getElementById('audio-preview')
-  if (audio && !event.target.matches('.track-image')) audio.remove()
+  if (audio && !e.matches('.track-image')) {
+    resetAudio()
+  }
+  else if (e.matches('.track-image')) {
+    resetAudio()
+    if (e.dataset.preview == 'None') {
+      e.nextElementSibling.style.display = 'block'
+      setTimeout(() => {
+        e.nextElementSibling.style.display = 'none'
+      }, "3000")
+      return
+    } else if (!audio) {
+      initializeAudio(e)
+    } else if (audio && audio.src == e.dataset.preview) {
+      
+      if (audio.paused) {
+        audio.play();
+        p.classList.add('playing')
+      }
+      else if (!audio.paused) {
+        audio.pause()
+        p.classList.remove('playing')
+      }
+    } else if (audio && audio.src != e.dataset.preview) {
+      resetAudio()
+      initializeAudio(e)
+    }
+  }
 
 
-  if (event.target.matches('.track-delete')) {
+  else if (event.target.matches('.track-delete')) {
     uri = event.target.parentElement.parentElement.dataset.uri
     fetch(`/delete_track/${uri}`)
     .then(response => {
@@ -72,21 +115,7 @@ document.addEventListener('click', event => {
       }
     })
   }
-
-  else if (event.target.matches('.track-image')) {
-    let audio = document.getElementById('audio-preview')
-    if (!audio) {
-      initializeAudio(event.target)
-    } else if (audio && audio.src == event.target.dataset.preview) {
-      if (audio.paused) audio.play();
-      else if (!audio.paused) audio.pause()
-    } else if (audio && audio.src != event.target.dataset.preview) {
-      audio.remove()
-      initializeAudio(event.target)
-    }
-  }
-
-  else if (event.target.matches('.track-options')){
+  else if (event.target.matches('#mix-song-button')){
     
     let id = event.target.dataset.id
     let uri = event.target.parentElement.parentElement.dataset.uri
@@ -108,24 +137,32 @@ document.addEventListener('click', event => {
 
 
 document.addEventListener('click', event => {
-  if (event.target.matches('#options-button')) {
+  if (event.target.matches('#form-options-button')) {
     document.getElementById('modal-background').style.display = 'block';
     document.getElementById('options-modal').style.display = 'block';
-  };
-  if (event.target.matches('.modal-cancel')) {
+    let popularity = document.getElementById('track-popularity').value
+    document.getElementById('popularity-range').style['background-size'] = popularity + '%'
+    document.getElementById('popularity-indicator').innerHTML = popularity
+    let length = document.getElementById('playlist-length').value
+    document.getElementById('length-range').style['background-size'] = (length*5-50) + '%'
+    document.getElementById('length-indicator').innerHTML = length
+  }
+  else if (event.target.matches('#modal-cancel') || event.target.matches('.modal-button')) {
     document.getElementById('modal-background').style.display = 'none';
     document.getElementById('options-modal').style.display = 'none';
     document.getElementById('playlist-modal').style.display = 'none';
-  };
-  if (event.target.matches('.modal-submit')) {
-    document.getElementById('modal-background').style.display = 'none';
-  };
-  if (event.target.matches('#send_card')) {
+    document.getElementById('track-modal').style.display = 'none';
+  }
+  else if (event.target.matches('#send-button')) {
     document.getElementById('modal-background').style.display = 'block';
     document.getElementById('playlist-modal').style.display = 'block';
-  };
+  }
+  else if (event.target.matches('.track-options')) {
+    document.getElementById('modal-background').style.display = 'block';
+    document.getElementById('track-modal').style.display = 'block';
+  }
 
-  if (event.target.matches('#track-add')) {
+  else if (event.target.matches('#track-add-button')) {
     fetch('/add_track')
     .then(response => response.json())
     .then(track => {
@@ -133,7 +170,7 @@ document.addEventListener('click', event => {
     })
   };
 
-  if (event.target.matches('#options-send')) {
+  if (event.target.matches('#options-submit')) {
     let popularity = document.getElementById('track-popularity').value
     let length = document.getElementById('playlist-length').value
     
@@ -168,7 +205,7 @@ document.addEventListener('click', event => {
   if (event.target.matches('#playlist-send')){
     let playlistName = document.getElementById('playlist-name').value
     let description = document.getElementById('playlist-description').value
-    let public = document.querySelector('input[name="public"]:checked').value;
+    let public = document.querySelector('input[name="visibility"]:checked').value;
     
     fetch('/send_playlist',
       {
@@ -202,7 +239,7 @@ document.addEventListener('click', event => {
 });
 
 window.onload = function() {
-  let searchBox = document.getElementById('search-artist')
+  let searchBox = document.getElementById('artist-input')
   if (searchBox) {
     searchBox.addEventListener('keyup', event => {
       const ignore = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter']

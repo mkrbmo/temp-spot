@@ -15,17 +15,19 @@
     <div id="container" >
         <div class="background-tile"></div>
         
-            <header id="menu" >
+            <nav id="menu" >
                 
-                    <nav class="nav-items">
-                        <a class="nav-item" href="{{ url_for('routes.home') }}">spot</a>
-                        <a class="nav-item" href="{{ url_for('routes.analysis') }}">analyze</a>
-                        <span class="nav-item" ></span>
-                        <a class="nav-item" href="#">...</a>
-                    </nav>
-                
+                <a class="nav-item" href="{{ url_for('routes.home') }}">moodring</a>
+                <a class="nav-item" href="{{ url_for('routes.analysis') }}">analyze</a>
+                        
+                 <div class="toggle-switch">
+                    <label class="switch-label">
+                        <input type="checkbox" class="switch-checkbox" id="light-mode">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
             
-            </header>
+            </nav>
             
             {% block content %} {% endblock %}
             

@@ -1,18 +1,20 @@
 {% extends 'card.html' %} 
 
 {% block card %} 
-        <form method="POST" >
-            <label for="search-artist"></label>
-            <input type="text" list="suggestions" name="search-artist" id="search-artist" autocomplete="off" required>
-            
-            <div class="suggestions-container">
-                <datalist id="suggestions">
-                    <option class="suggestion" value=""></option>
-                    <option class="suggestion" value=""></option>
-                    <option class="suggestion" value=""></option>
-                </datalist>
-            </div>
+    <form id="form-content" method="POST" name="analysis_form" id="analysis_form">
+                
+        <label for="search-artist"></label>
+        <input type="text" list="suggestions" name="search-artist" id="artist-input" class="text-input" autocomplete="off" required>
+        
+        <div id="suggestions-container">
+            <datalist id="suggestions">
+                <option class="suggestion" value=""></option>
+                <option class="suggestion" value=""></option>
+                <option class="suggestion" value=""></option>
+            </datalist>
+        </div>
 
-            <input id="search-button" type="submit" value="analyze">
-        </form>
+        <input class="form-submit-button" type="submit" value="analyze">
+        
+    </form>
 {% endblock %}
